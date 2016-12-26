@@ -54,3 +54,10 @@ hs_err_pid*
 *.iml
 out
 gen
+.gitignore
+.mvn/
+Docker/
+mvnw
+mvnw.cmd
+pom.xml
+src/
