@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -22,7 +23,7 @@ public class Prescription {
     @Column(name="ien")
     String ien;
 
-    @OneToOne(optional=false)
+    @OneToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name = "patient", referencedColumnName="ien")
     private Patient patient;
 

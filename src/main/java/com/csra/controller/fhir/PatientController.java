@@ -2,6 +2,9 @@ package com.csra.controller.fhir;
 
 import com.csra.fhir.Bundle;
 import com.csra.fhir.Patient;
+import com.csra.mapstruct.mapper.MaritalStatusMapper;
+import com.csra.mapstruct.mapper.HumanNameMapper;
+import com.csra.mapstruct.mapper.PatientMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -28,6 +31,9 @@ public class PatientController extends RootController {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private PatientMapper patientMapper;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
     @RequestMapping(method = RequestMethod.GET, path="/patients", produces = "application/json")
@@ -64,7 +70,8 @@ public class PatientController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(patientRepository.findByIen(ien)), HttpStatus.OK);
+            Patient patient = patientMapper.patientToFhirPatient(patientRepository.findByIen(ien));
+            response = new ResponseEntity<String>(objectMapper.writeValueAsString(patient), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }

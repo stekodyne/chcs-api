@@ -1,6 +1,16 @@
 package com.csra.controller.fhir;
 
+import com.csra.fhir.Bundle;
+import com.csra.repository.DeviceRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -16,7 +26,7 @@ public class DeviceController extends RootController {
     private DeviceRepository deviceRepository;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
-    @RequestMapping(method = RequestMethod.GET, path="/medications", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/devices", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Bundle.class),
             @ApiResponse(code = 401, message = "Unauthorized"),

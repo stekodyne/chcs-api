@@ -58,8 +58,9 @@ public class Patient {
     @Column(name="office_phone")
     private String officePhone;
 
-    @Column(name="marital_status")
-    private String maritalStatus;
+    @OneToOne(optional=true)
+    @JoinColumn(name = "marital_status", referencedColumnName="ien")
+    private MaritalStatus maritalStatus;
 
     @OneToOne(optional=false)
     @JoinColumn(name = "race", referencedColumnName="ien")

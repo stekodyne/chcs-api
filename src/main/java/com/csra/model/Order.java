@@ -3,6 +3,7 @@ package com.csra.model;
 import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -23,7 +24,7 @@ public class Order {
     @Column(name = "id_number")
     private String idNumber;
 
-    @OneToOne(optional=false)
+    @OneToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name = "patient", referencedColumnName="ien")
     private Patient patient;
 
