@@ -10,6 +10,6 @@ import java.util.List;
 public interface PrescriptionRepository extends CrudRepository<Prescription, Long> {
 
     public Prescription findByIen(String ien);
-    public List<Prescription> findAll();
+    public List<Prescription> findAllByPatient(String patient);
 
 }

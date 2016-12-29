@@ -24,7 +24,7 @@ public class ObjectController extends RootController {
     @ApiOperation(value = "getObject", nickname = "getObject")
     @RequestMapping(method = RequestMethod.GET, path="/stub/{objectType}", produces = "application/json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "objectType", value = "FHIR Object Type", required = true, dataType = "string", paramType = "query", defaultValue="patient")
+            @ApiImplicitParam(name = "objectType", value = "FHIR Object Type", required = true, dataType = "string", paramType = "path", defaultValue="patient")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Object.class),
@@ -36,7 +36,7 @@ public class ObjectController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirFactory.getObject(objectType)), HttpStatus.OK);
+            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirFactory.getObject(objectType.toLowerCase())), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }

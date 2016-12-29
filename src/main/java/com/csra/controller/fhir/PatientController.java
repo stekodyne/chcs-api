@@ -2,8 +2,6 @@ package com.csra.controller.fhir;
 
 import com.csra.fhir.Bundle;
 import com.csra.fhir.Patient;
-import com.csra.mapstruct.mapper.MaritalStatusMapper;
-import com.csra.mapstruct.mapper.HumanNameMapper;
 import com.csra.mapstruct.mapper.PatientMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,7 +34,7 @@ public class PatientController extends RootController {
     private PatientMapper patientMapper;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
-    @RequestMapping(method = RequestMethod.GET, path="/patients", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/Patient", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Bundle.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
@@ -47,7 +45,8 @@ public class PatientController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(patientRepository.findAll()), HttpStatus.OK);
+            Bundle bundle = patientMapper.patientsToFhirBundle(patientRepository.findAll());
+            response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,9 +55,9 @@ public class PatientController extends RootController {
     }
 
     @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path="/patients/{ien}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/Patient/{ien}", produces = "application/json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
+            @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Patient.class),
@@ -80,9 +79,9 @@ public class PatientController extends RootController {
     }
 
     @ApiOperation(value = "updateByIen", nickname = "updateByIen")
-    @RequestMapping(method = RequestMethod.POST, path="/patients/{ien}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.POST, path="/Patient/{ien}", produces = "application/json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
+            @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Patient.class),

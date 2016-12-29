@@ -23,13 +23,14 @@ public class Prescription {
     @Column(name="ien")
     String ien;
 
-    @OneToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name = "patient", referencedColumnName="ien")
-    private Patient patient;
+    @Column(name="patient")
+    private String patient;
 
-    @OneToOne(optional=false)
-    @JoinColumn(name = "drug", referencedColumnName="ien")
-    private Drug drug;
+    @Column(name="provider")
+    private String provider;
+
+    @Column(name = "drug")
+    private String drug;
 
     @Column(name="qty")
     Integer quanity;

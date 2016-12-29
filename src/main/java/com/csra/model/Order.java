@@ -24,8 +24,7 @@ public class Order {
     @Column(name = "id_number")
     private String idNumber;
 
-    @OneToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name = "patient", referencedColumnName="ien")
-    private Patient patient;
+    @Column(name = "patient")
+    private String patient;
 
 }

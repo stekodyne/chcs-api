@@ -22,10 +22,10 @@ public class ChcsApiApplication {
 	@Bean
 	public Docket patientApi() {
 		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("patient")
+				.groupName("Patient")
 				.apiInfo(apiInfo())
 				.select()
-				.paths(regex("/fhir/patient.*"))
+				.paths(regex("/fhir/Patient.*"))
 				.build();
 	}
 
@@ -42,10 +42,10 @@ public class ChcsApiApplication {
 	@Bean
 	public Docket medicationApi() {
 		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("medication")
+				.groupName("MedicationOrder")
 				.apiInfo(apiInfo())
 				.select()
-				.paths(regex("/fhir/medication.*"))
+				.paths(regex("/fhir/MedicationOrder.*"))
 				.build();
 	}
 
