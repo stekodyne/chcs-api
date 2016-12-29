@@ -2,7 +2,7 @@
 FROM openjdk:8-jdk-alpine
 
 MAINTAINER Steffen Kory <stekodyne@gmail.com>
-
+EXPOSE 8080
 VOLUME /tmp
 ADD target/chcs-api-0.0.1-SNAPSHOT.jar app.jar
 RUN sh -c 'touch /app.jar'
