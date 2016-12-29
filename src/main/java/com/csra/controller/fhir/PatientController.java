@@ -36,7 +36,7 @@ public class PatientController extends RootController {
     @ApiOperation(value = "findAll", nickname = "findAll")
     @RequestMapping(method = RequestMethod.GET, path="/Patient", produces = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
@@ -60,7 +60,7 @@ public class PatientController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Patient.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
@@ -84,7 +84,7 @@ public class PatientController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Patient.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),

@@ -2,7 +2,6 @@ package com.csra.controller.fhir;
 
 import com.csra.fhir.Bundle;
 import com.csra.fhir.MedicationOrder;
-import com.csra.fhir.Order;
 import com.csra.mapstruct.mapper.PrescriptionMapper;
 import com.csra.repository.PrescriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,7 +40,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
@@ -65,7 +64,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Order.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
@@ -89,7 +88,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Medication's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Order.class),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
