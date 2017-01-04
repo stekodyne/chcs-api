@@ -51,8 +51,8 @@ public class ChcsApiApplication {
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-				.title("Spring REST Sample with Swagger")
-				.description("Spring REST Sample with Swagger")
+				.title("CHCS API")
+				.description("CHCS Spring REST API with Swagger")
 				.termsOfServiceUrl("http://www-03.ibm.com/software/sla/sladb.nsf/sla/bm?Open")
 				.contact("Steffen Kory")
 				.license("Apache License Version 2.0")

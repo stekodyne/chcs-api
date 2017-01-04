@@ -1,9 +1,17 @@
 package com.csra.controller.fhir;
 
 import com.csra.fhir.Bundle;
+import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.MedicationOrder;
+import com.csra.fhir.OperationOutcome;
 import com.csra.mapstruct.mapper.PrescriptionMapper;
+import com.csra.model.Drug;
+import com.csra.model.Prescription;
+import com.csra.model.Provider;
+import com.csra.repository.DrugRepository;
 import com.csra.repository.PrescriptionRepository;
+import com.csra.repository.ProviderRepository;
+import com.csra.utility.OperationOutcomeGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -14,11 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by steffen on 12/21/16.
@@ -32,6 +44,12 @@ public class MedicationOrderController extends RootController {
     private PrescriptionRepository prescriptionRepository;
 
     @Autowired
+    private DrugRepository drugRepository;
+
+    @Autowired
+    private ProviderRepository providerRepository;
+
+    @Autowired
     private PrescriptionMapper prescriptionMapper;
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
@@ -40,17 +58,21 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
+            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
+            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
+            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
     public ResponseEntity<String> findAllByPatient(@RequestParam String patient) {
         ResponseEntity<String> response = null;
 
         try {
-            Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptionRepository.findAllByPatient(patient));
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
+            List<Prescription> prescriptions = prescriptionRepository.findAllByPatient(patient);
+            if (prescriptions.size() > 0) {
+                Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptions);
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
+            } else {
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No prescriptions found!",
+                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
+            }
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -64,17 +86,22 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
+            @ApiResponse(code = 200, message = "Success", response = MedicationOrder.class),
+            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
+            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
         ResponseEntity<String> response = null;
 
         try {
-            MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescriptionRepository.findByIen(ien));
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
+            Prescription prescription = prescriptionRepository.findByIen(ien);
+
+            if (prescription != null) {
+                MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescription);
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
+            } else {
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No prescription found!",
+                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
+            }
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -85,21 +112,37 @@ public class MedicationOrderController extends RootController {
     @ApiOperation(value = "updateByIen", nickname = "updateByIen")
     @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder/{ien}", produces = "application/json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Medication's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
+            @ApiImplicitParam(name = "ien", value = "Medication's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67"),
+            @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> updateByIen(@PathVariable String ien) {
+            @ApiResponse(code = 201, message = "Success", response = MedicationOrder.class),
+            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
+            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+    public ResponseEntity<String> updateByIen(@PathVariable String ien, @RequestBody MedicationOrder medicationOrder) {
         ResponseEntity<String> response = null;
 
         try {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(prescriptionRepository.findByIen(ien)), HttpStatus.OK);
+
+            if(medicationOrder == null) {
+                throw new Exception("MedicationOrder was null!");
+            }
+
+            Prescription prescription = prescriptionMapper.prescriptionFromFhirMedicationOrder(medicationOrder);
+            Drug drug = drugRepository.findByIen(prescription.getDrug());
+            Provider provider = providerRepository.findByIen(prescription.getProvider());
+
+            if (drug == null || provider != null) {
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("Drug or Provider are missing or incomplete!",
+                        IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
+            } else {
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(prescriptionRepository.findByIen(ien)), HttpStatus.OK);
+            }
+
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("{\"error\": \"" + e.getMessage() + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return response;
