@@ -43,8 +43,8 @@ public interface PatientMapper {
         for(com.csra.model.Patient resource : patients) {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
+            resourceContainer.setPatient(this.patientToFhirPatient(resource));
             bundleEntry.setResource(resourceContainer);
-            bundleEntry.getResource().setPatient(this.patientToFhirPatient(resource));
             bundle.getEntry().add(bundleEntry);
         }
 

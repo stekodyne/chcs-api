@@ -44,8 +44,8 @@ public interface PrescriptionMapper {
         for(Prescription resource : prescriptions) {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
+            resourceContainer.setMedicationOrder(this.prescriptionToFhirMedicationOrder(resource));
             bundleEntry.setResource(resourceContainer);
-            bundleEntry.getResource().setMedicationOrder(this.prescriptionToFhirMedicationOrder(resource));
             bundle.getEntry().add(bundleEntry);
         }
 
