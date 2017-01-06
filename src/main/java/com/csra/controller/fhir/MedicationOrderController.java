@@ -25,6 +25,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,8 @@ import java.util.List;
 @EnableSwagger2
 @RequestMapping("/fhir")
 public class MedicationOrderController extends RootController {
+
+    static Logger log = LoggerFactory.getLogger(MedicationOrderController.class.getName());
 
     @Autowired
     private PrescriptionRepository prescriptionRepository;
@@ -152,13 +156,24 @@ public class MedicationOrderController extends RootController {
             Provider provider = providerRepository.findByIen(prescription.getProvider());
             Patient patient = patientRepository.findByIen(prescription.getPatient());
 
+            log.debug("Patient: {}", patient);
+
             if (patient == null || provider == null) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("Drug or Provider are missing or incomplete!",
                         IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
             } else {
                 com.qbase.legacy.api.dao.Patient legacyPatient = legacyPatientMapper.patientToLegacyPatient(patient);
+
+                log.debug("Legacy Patient: {}", legacyPatient);
+
                 com.qbase.legacy.api.dao.Prescription legacyPrescription = legacyPrescriptionMapper.prescriptionToLegacyPrescription(prescription, drug, provider);
+
+                log.debug("Legacy Prescription: {}", legacyPrescription);
+
                 ArrayOfDataTypes errors = chcsRepository.savePrescription(legacyPatient, legacyPrescription);
+
+                log.debug("Errors: {}", errors);
+
                 if (errors == null) {
                     response = new ResponseEntity<String>(HttpStatus.CREATED);
                 } else {
