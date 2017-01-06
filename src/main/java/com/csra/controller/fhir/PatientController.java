@@ -39,11 +39,11 @@ public class PatientController extends RootController {
     private PatientMapper patientMapper;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
-    @RequestMapping(method = RequestMethod.GET, path = "/Patient", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path = "/Patient", produces = "application/json+fhir")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
-            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
-            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findAll() {
         ResponseEntity<String> response = null;
 
@@ -65,14 +65,14 @@ public class PatientController extends RootController {
     }
 
     @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path = "/Patient/{ien}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path = "/Patient/{ien}", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ien", value = "Patient's IEN", required = true, dataType = "string", paramType = "path", defaultValue = "67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Patient.class),
-            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
-            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
         ResponseEntity<String> response = null;
 

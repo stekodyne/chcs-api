@@ -26,11 +26,9 @@ public class DeviceMetricController extends RootController {
     private DeviceRepository deviceRepository;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
-    @RequestMapping(method = RequestMethod.GET, path="/DeviceMetric", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/DeviceMetric", produces = "application/json+fhir")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findAll() {

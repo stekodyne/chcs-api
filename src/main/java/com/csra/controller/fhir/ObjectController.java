@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ObjectController extends RootController {
 
     @ApiOperation(value = "getObject", nickname = "getObject")
-    @RequestMapping(method = RequestMethod.GET, path="/stub/{objectType}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/stub/{objectType}", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "objectType", value = "FHIR Object Type", required = true, dataType = "string", paramType = "path", defaultValue="patient")
     })

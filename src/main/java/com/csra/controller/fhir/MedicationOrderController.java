@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by steffen on 12/21/16.
@@ -53,14 +52,14 @@ public class MedicationOrderController extends RootController {
     private PrescriptionMapper prescriptionMapper;
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
-            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
-            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findAllByPatient(@RequestParam String patient) {
         ResponseEntity<String> response = null;
 
@@ -81,14 +80,14 @@ public class MedicationOrderController extends RootController {
     }
 
     @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder/{ien}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder/{ien}", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MedicationOrder.class),
-            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
-            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
         ResponseEntity<String> response = null;
 
@@ -110,15 +109,15 @@ public class MedicationOrderController extends RootController {
     }
 
     @ApiOperation(value = "updateByIen", nickname = "updateByIen")
-    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder/{ien}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder/{ien}", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ien", value = "Medication's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67"),
             @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success", response = MedicationOrder.class),
-            @ApiResponse(code = 404, message = "Not Found", response = OperationOutcome.class),
-            @ApiResponse(code = 500, message = "Failure", response = OperationOutcome.class)})
+            @ApiResponse(code = 201, message = "Success", response = Object.class),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> updateByIen(@PathVariable String ien, @RequestBody MedicationOrder medicationOrder) {
         ResponseEntity<String> response = null;
 
