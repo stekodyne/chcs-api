@@ -12,6 +12,7 @@ import com.csra.repository.DrugRepository;
 import com.csra.repository.PrescriptionRepository;
 import com.csra.repository.ProviderRepository;
 import com.csra.utility.OperationOutcomeGenerator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -66,6 +67,7 @@ public class MedicationOrderController extends RootController {
         try {
             List<Prescription> prescriptions = prescriptionRepository.findAllByPatient(patient);
             if (prescriptions.size() > 0) {
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptions);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
@@ -95,6 +97,7 @@ public class MedicationOrderController extends RootController {
             Prescription prescription = prescriptionRepository.findByIen(ien);
 
             if (prescription != null) {
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescription);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
             } else {
@@ -115,7 +118,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success", response = Object.class),
+            @ApiResponse(code = 201, message = "Success"),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> updateByIen(@PathVariable String ien, @RequestBody MedicationOrder medicationOrder) {
