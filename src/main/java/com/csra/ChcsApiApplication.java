@@ -26,7 +26,8 @@ public class ChcsApiApplication {
 				.apiInfo(apiInfo())
 				.select()
 				.paths(regex("/fhir/Patient.*"))
-				.build();
+				.build()
+				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
 	}
 
 	@Bean
@@ -46,7 +47,8 @@ public class ChcsApiApplication {
 				.apiInfo(apiInfo())
 				.select()
 				.paths(regex("/fhir/MedicationOrder.*"))
-				.build();
+				.build()
+				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
 	}
 
 	private ApiInfo apiInfo() {

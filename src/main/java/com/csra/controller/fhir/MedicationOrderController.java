@@ -3,7 +3,6 @@ package com.csra.controller.fhir;
 import com.csra.fhir.Bundle;
 import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.MedicationOrder;
-import com.csra.fhir.OperationOutcome;
 import com.csra.mapstruct.mapper.PrescriptionMapper;
 import com.csra.model.Drug;
 import com.csra.model.Prescription;
@@ -58,7 +57,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 200, message = "Success", response = Bundle.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findAllByPatient(@RequestParam String patient) {
@@ -87,7 +86,7 @@ public class MedicationOrderController extends RootController {
             @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 200, message = "Success", response = MedicationOrder.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
