@@ -62,4 +62,5 @@ public class Prescription {
     @OneToOne(optional=false)
     @JoinColumn(name = "order_pointer", referencedColumnName="ien")
     Order order;
+
 }

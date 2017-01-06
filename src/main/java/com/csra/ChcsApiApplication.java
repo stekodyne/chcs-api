@@ -8,6 +8,8 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import com.qbase.legacy.api.RepositoryFactory;
+import com.qbase.legacy.api.repository.IRepository;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -17,6 +19,11 @@ public class ChcsApiApplication {
 	@Bean
 	public ObjectMapper objectMapper() {
 		return new ObjectMapper();
+	}
+
+	@Bean
+	public IRepository chcsRepository() throws Exception {
+		return (IRepository) new RepositoryFactory().getRepository("chcs", "jp");
 	}
 
 	@Bean

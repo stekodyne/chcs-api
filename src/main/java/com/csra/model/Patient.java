@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -62,7 +63,7 @@ public class Patient {
     @JoinColumn(name = "marital_status", referencedColumnName="ien")
     private MaritalStatus maritalStatus;
 
-    @OneToOne(optional=false)
+    @OneToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name = "race", referencedColumnName="ien")
     private Race race;
 

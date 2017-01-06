@@ -3,16 +3,23 @@ package com.csra.controller.fhir;
 import com.csra.fhir.Bundle;
 import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.MedicationOrder;
+import com.csra.mapstruct.mapper.LegacyPatientMapper;
+import com.csra.mapstruct.mapper.LegacyPrescriptionMapper;
 import com.csra.mapstruct.mapper.PrescriptionMapper;
 import com.csra.model.Drug;
+import com.csra.model.Patient;
 import com.csra.model.Prescription;
 import com.csra.model.Provider;
 import com.csra.repository.DrugRepository;
+import com.csra.repository.PatientRepository;
 import com.csra.repository.PrescriptionRepository;
 import com.csra.repository.ProviderRepository;
 import com.csra.utility.OperationOutcomeGenerator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intersys.classes.ArrayOfDataTypes;
+import com.qbase.legacy.api.repository.IRepository;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -49,7 +56,19 @@ public class MedicationOrderController extends RootController {
     private ProviderRepository providerRepository;
 
     @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
     private PrescriptionMapper prescriptionMapper;
+
+    @Autowired
+    protected IRepository chcsRepository;
+
+    @Autowired
+    private LegacyPatientMapper legacyPatientMapper;
+
+    @Autowired
+    private LegacyPrescriptionMapper legacyPrescriptionMapper;
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
     @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder", produces = "application/json+fhir")
@@ -110,17 +129,16 @@ public class MedicationOrderController extends RootController {
         return response;
     }
 
-    @ApiOperation(value = "updateByIen", nickname = "updateByIen")
-    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder/{ien}", produces = "application/json+fhir")
+    @ApiOperation(value = "createMedicationOrder", nickname = "createMedicationOrder")
+    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Medication's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67"),
             @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success"),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> updateByIen(@PathVariable String ien, @RequestBody MedicationOrder medicationOrder) {
+    public ResponseEntity<String> createMedicationOrder(@RequestBody MedicationOrder medicationOrder) throws Exception {
         ResponseEntity<String> response = null;
 
         try {
@@ -132,18 +150,24 @@ public class MedicationOrderController extends RootController {
             Prescription prescription = prescriptionMapper.prescriptionFromFhirMedicationOrder(medicationOrder);
             Drug drug = drugRepository.findByIen(prescription.getDrug());
             Provider provider = providerRepository.findByIen(prescription.getProvider());
+            Patient patient = patientRepository.findByIen(prescription.getPatient());
 
-            if (drug == null || provider != null) {
+            if (patient == null || provider == null) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("Drug or Provider are missing or incomplete!",
                         IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(prescriptionRepository.findByIen(ien)), HttpStatus.OK);
+                com.qbase.legacy.api.dao.Patient legacyPatient = legacyPatientMapper.patientToLegacyPatient(patient);
+                com.qbase.legacy.api.dao.Prescription legacyPrescription = legacyPrescriptionMapper.prescriptionToLegacyPrescription(prescription, drug, provider);
+                ArrayOfDataTypes errors = chcsRepository.savePrescription(legacyPatient, legacyPrescription);
+                if (errors == null) {
+                    response = new ResponseEntity<String>(HttpStatus.CREATED);
+                } else {
+                    response = new ResponseEntity<String>(errors.toString(), HttpStatus.BAD_REQUEST);
+                }
             }
 
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            response = new ResponseEntity<String>("{\"error\": \"" + e.getMessage() + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return response;
