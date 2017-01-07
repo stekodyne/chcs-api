@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,12 @@ import java.util.List;
 /**
  * Created by steffen on 12/27/16.
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {HumanNameMapper.class, MaritalStatusMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {HumanNameMapper.class, MaritalStatusMapper.class, IdMapper.class, CodeMapper.class, StringMapper.class})
 public interface PatientMapper {
 
     PatientMapper INSTANCE = Mappers.getMapper( PatientMapper.class );
+
+    static Logger log = LoggerFactory.getLogger(PatientMapper.class.getName());
 
     @Mappings({
             @Mapping(source = "ien", target = "id"),

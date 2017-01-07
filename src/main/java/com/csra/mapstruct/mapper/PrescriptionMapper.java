@@ -4,7 +4,6 @@ import com.csra.fhir.Bundle;
 import com.csra.fhir.BundleEntry;
 import com.csra.fhir.BundleType;
 import com.csra.fhir.BundleTypeList;
-import com.csra.fhir.MedicationOrder;
 import com.csra.fhir.ResourceContainer;
 import com.csra.model.Prescription;
 import org.mapstruct.InheritInverseConfiguration;
@@ -13,6 +12,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,12 @@ import java.util.List;
 /**
  * Created by steffen on 12/27/16.
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {ReferenceMapper.class, MedicationOrderStatusMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {ReferenceMapper.class, MedicationOrderStatusMapper.class, IdMapper.class})
 public interface PrescriptionMapper {
 
     PrescriptionMapper INSTANCE = Mappers.getMapper( PrescriptionMapper.class );
+
+    static Logger log = LoggerFactory.getLogger(PrescriptionMapper.class.getName());
 
     @Mappings({
             @Mapping(source = "ien", target = "id"),
@@ -46,7 +49,7 @@ public interface PrescriptionMapper {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
             resourceContainer.setMedicationOrder(this.prescriptionToFhirMedicationOrder(resource));
-            bundleEntry.setResource(this.prescriptionToFhirMedicationOrder(resource));
+            bundleEntry.setResource(resourceContainer);
             bundle.getEntry().add(bundleEntry);
         }
 

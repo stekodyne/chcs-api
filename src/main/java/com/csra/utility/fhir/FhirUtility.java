@@ -1,14 +1,19 @@
 package com.csra.utility.fhir;
 
 import com.csra.fhir.Code;
+import com.csra.fhir.CodeableConcept;
 import com.csra.fhir.Coding;
-import com.csra.fhir.Date;
 import com.csra.fhir.DateTime;
 import com.csra.fhir.Decimal;
 import com.csra.fhir.Id;
 import com.csra.fhir.Identifier;
 import com.csra.fhir.Instant;
+import com.csra.fhir.IssueType;
+import com.csra.fhir.IssueTypeList;
+import com.csra.fhir.OperationOutcome;
+import com.csra.fhir.OperationOutcomeIssue;
 import com.csra.fhir.SimpleQuantity;
+import com.csra.fhir.String;
 import com.csra.fhir.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +27,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 /**
  * Created by steffen on 1/6/17.
  */
@@ -29,101 +36,75 @@ public abstract class FhirUtility {
 
     private static Logger log = LoggerFactory.getLogger(FhirUtility.class);
 
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+
     public final static Id FHIR_VERSION = createFhirVersion();
 
-    public enum AGGREGATION {
+    public enum Aggregation {
         CONTAINED("contained"), REFERENCED("referenced"), BUNDLED("bundled");
 
         public final java.lang.String code;
 
-        AGGREGATION(java.lang.String code) {
+        Aggregation(java.lang.String code) {
             this.code = code;
         }
     }
 
-    public enum FORMAT {
+    public enum Format {
         JSON("json"), XML("xml");
 
         public final Code code;
 
-        FORMAT(java.lang.String code) {
+        Format(java.lang.String code) {
             this.code = (Code) ObjectFactory.getObject("code");
             this.code.setId(createId().getValue());
             this.code.setValue(code);
         }
     }
 
-    public enum CONFORMANCE_STATUS {
+    public enum ConformanceStatus {
         DRAFT("draft"), ACTIVE("active"), RETIRED("retired");
 
         public final Code code;
 
-        CONFORMANCE_STATUS(java.lang.String code) {
+        ConformanceStatus(java.lang.String code) {
             this.code = (Code) ObjectFactory.getObject("code");
             this.code.setId(createId().getValue());
             this.code.setValue(code);
         }
     }
 
-    public enum IMMUNIZATION_STATUS {
-        IN_PROGRESS("in-progress", "In Progress"), ON_HOLD("on-hold", "On Hold"), COMPLETED("completed", "Completed"), ENTERED_IN_ERROR("entered-in-error", "Entered in Error"), STOPPED("stopped", "Stopped");
+    public enum MedicationOrderStatus {
+        IN_PROGRESS("in-progress", "In Progress"),
+        ON_HOLD("on-hold", "On Hold"),
+        COMPLETED("completed", "Completed"),
+        ENTERED_IN_ERROR("entered-in-error", "Entered in Error"),
+        STOPPED("stopped", "Stopped");
 
         public final Coding coding;
 
-        IMMUNIZATION_STATUS(java.lang.String s, java.lang.String display) {
-            this.coding = (Coding) ObjectFactory.getObject("coding");
-            Code code = (Code) ObjectFactory.getObject("code");
-            code.setId(createId().getValue());
-            code.setValue(s);
-            coding.setSystem(createUri("http://hl7.org/fhir/immunization-status"));
-            coding.setCode(code.getValue());
-            coding.setDisplay(display);
-        }
-    }
-
-    public enum IMMUNIZATION_RECOMMENDATION_STATUS {
-        DUE("due"), OVERDUE("overdue");
-
-        public final Coding coding;
-
-        IMMUNIZATION_RECOMMENDATION_STATUS(java.lang.String value) {
+        MedicationOrderStatus(java.lang.String value, java.lang.String display) {
             this.coding = (Coding) ObjectFactory.getObject("coding");
             Code code = (Code) ObjectFactory.getObject("code");
             code.setId(createId().getValue());
             code.setValue(value);
-            coding.setCode(code.getValue());
+            this.coding.setSystem(createUri("http://hl7.org/fhir/immunization-status"));
+            this.coding.setCode(code);
+            this.coding.setDisplay(convert(display));
         }
     }
 
-    public enum IMMUNIZATION_RECOMMENDATION_DATE_CRITERION {
-        DUE("due", "Due Date"), RECOMMENDED("reommended", "Recommended Date"), EARLIEST("earliest", "Earliest Date"), OVERDUE("overdue", "Past Due Date"), LATEST("latest", "Latest Date");
-
-        public final Coding coding;
-
-        IMMUNIZATION_RECOMMENDATION_DATE_CRITERION(java.lang.String s, java.lang.String display) {
-            this.coding = (Coding) ObjectFactory.getObject("coding");
-            Code code = (Code) ObjectFactory.getObject("code");
-            code.setId(createId().getValue());
-            code.setValue(s);
-            coding.setSystem(createUri("http://hl7.org/fhir/immunization-recommendation-date-criterion"));
-            coding.setCode(code.getValue());
-            coding.setDisplay(display);
-        }
-    }
-
-    public enum BOOLEAN {
+    public enum Boolean {
 
         TRUE(true), FALSE(false);
 
         public final com.csra.fhir.Boolean bool;
 
-        BOOLEAN(java.lang.Boolean bool) {
+        Boolean(java.lang.Boolean bool) {
             this.bool = (com.csra.fhir.Boolean) ObjectFactory.getObject("boolean");
             this.bool.setValue(bool);
         }
     }
-
-    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
 
     public static Instant createInstant(java.util.Date date) {
         Instant instant = (Instant) ObjectFactory.getObject("instant");
@@ -137,10 +118,18 @@ public abstract class FhirUtility {
         return instant;
     }
 
-    public static Id createId(java.lang.String sId) {
+    public static Id createId(java.lang.String input) {
         Id id = (Id) ObjectFactory.getObject("id");
-        id.setValue(sId);
+        id.setId(createUuid().getValue());
+        id.setValue(input);
         return id;
+    }
+
+    public static com.csra.fhir.String createString(java.lang.String input) {
+        com.csra.fhir.String output = (com.csra.fhir.String) ObjectFactory.getObject("string");
+        output.setId(createUuid().getValue());
+        output.setValue(input);
+        return output;
     }
 
     public static Id createId() {
@@ -163,14 +152,15 @@ public abstract class FhirUtility {
         return identifier;
     }
 
-    public static String createUuid() {
-        return UUID.randomUUID().toString();
+    public static com.csra.fhir.String createUuid() {
+        return convert(UUID.randomUUID().toString());
     }
 
-    public static com.csra.fhir.String convert(java.lang.String i) {
-        com.csra.fhir.String s = (com.csra.fhir.String) ObjectFactory.getObject("string");
-        s.setValue(i);
-        return s;
+    public static com.csra.fhir.String convert(java.lang.String input) {
+        com.csra.fhir.String output = new com.csra.fhir.String();
+        output.setId(createId().getValue());
+        output.setValue(input);
+        return output;
     }
 
     public static Uri createUri(java.lang.String s) {
@@ -179,13 +169,13 @@ public abstract class FhirUtility {
         return uri;
     }
 
-    public static String createUrn(Identifier i) {
-        return createUrn(i.getValue());
+    public static com.csra.fhir.String createUrn(Identifier input) {
+        return createUrn(input.getValue());
     }
 
-    public static String createUrn(String input) {
+    public static com.csra.fhir.String createUrn(com.csra.fhir.String input) {
         java.lang.String output = "urn:uuid:" + input;
-        return output;
+        return convert(output);
     }
 
     public static SimpleQuantity createQuantity(BigDecimal input) {
@@ -198,12 +188,36 @@ public abstract class FhirUtility {
         return quantity;
     }
 
-    public static Date convert(java.util.Date input) {
+    public static Code createCode(java.lang.String value) {
+        Code code = (Code) ObjectFactory.getObject("code");
+        code.setId(createId().getValue());
+        code.setValue(value);
+        return code;
+    }
+
+    public static OperationOutcome createOperationOutcome(java.lang.String message, IssueTypeList issueTypeList) {
+        OperationOutcome operationOutcome = (OperationOutcome) ObjectFactory.getObject("operationoutcome");
+        OperationOutcomeIssue operationOutcomeIssue = (OperationOutcomeIssue) ObjectFactory.getObject("operationoutcomeissue");
+        Coding coding = (Coding) ObjectFactory.getObject("coding");
+        IssueType issueType = (IssueType) ObjectFactory.getObject("issuetype");
+        CodeableConcept codeableConcept = (CodeableConcept) ObjectFactory.getObject("codeableconcept");
+
+        operationOutcomeIssue.setId(createUuid().getValue());
+        issueType.setValue(issueTypeList);
+        operationOutcomeIssue.setCode(issueType);
+        coding.setCode(createCode(issueType.getValue().value()));
+        coding.setDisplay(convert(message));
+        codeableConcept.getCoding().add(coding);
+        operationOutcomeIssue.setDetails(codeableConcept);
+        operationOutcome.setId(createId());
+        operationOutcome.getIssue().add(operationOutcomeIssue);
+        return operationOutcome;
+    }
+
+    public static com.csra.fhir.Date convert(java.util.Date input) {
         XMLGregorianCalendar xmlGregorianCalendar = checkDateInput(input);
-
-        Date output = (Date) ObjectFactory.getObject("date");
+        com.csra.fhir.Date output = (com.csra.fhir.Date) ObjectFactory.getObject("date");
         output.setValue(xmlGregorianCalendar.toString());
-
         return output;
     }
 

@@ -14,10 +14,9 @@ import com.csra.repository.DrugRepository;
 import com.csra.repository.PatientRepository;
 import com.csra.repository.PrescriptionRepository;
 import com.csra.repository.ProviderRepository;
-import com.csra.utility.OperationOutcomeGenerator;
+import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intersys.classes.ArrayOfDataTypes;
 import com.qbase.legacy.api.repository.IRepository;
 import io.swagger.annotations.ApiImplicitParam;
@@ -93,7 +92,7 @@ public class MedicationOrderController extends RootController {
                 Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptions);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No prescriptions found!",
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescriptions found!",
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
         } catch (JsonProcessingException e) {
@@ -123,7 +122,7 @@ public class MedicationOrderController extends RootController {
                 MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescription);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No prescription found!",
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescription found!",
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
         } catch (JsonProcessingException e) {
@@ -159,7 +158,7 @@ public class MedicationOrderController extends RootController {
             log.debug("Patient: {}", patient);
 
             if (patient == null || provider == null) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("Drug or Provider are missing or incomplete!",
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("Drug or Provider are missing or incomplete!",
                         IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
             } else {
                 com.qbase.legacy.api.dao.Patient legacyPatient = legacyPatientMapper.patientToLegacyPatient(patient);

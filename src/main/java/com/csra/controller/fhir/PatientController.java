@@ -2,11 +2,10 @@ package com.csra.controller.fhir;
 
 import com.csra.fhir.Bundle;
 import com.csra.fhir.IssueTypeList;
-import com.csra.fhir.OperationOutcome;
 import com.csra.fhir.Patient;
 import com.csra.mapstruct.mapper.PatientMapper;
 import com.csra.repository.PatientRepository;
-import com.csra.utility.OperationOutcomeGenerator;
+import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -54,7 +53,7 @@ public class PatientController extends RootController {
                 Bundle bundle = patientMapper.patientsToFhirBundle(patients);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No patients found!",
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patients found!",
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
         } catch (JsonProcessingException e) {
@@ -82,7 +81,7 @@ public class PatientController extends RootController {
                 Patient patient = patientMapper.patientToFhirPatient(p);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(patient), HttpStatus.OK);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(OperationOutcomeGenerator.generate("No patient found!",
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patient found!",
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
         } catch (JsonProcessingException e) {

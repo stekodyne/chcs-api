@@ -3,6 +3,8 @@ package com.csra.mapstruct.mapper;
 import com.csra.fhir.CodeableConcept;
 import com.csra.fhir.Coding;
 import com.csra.model.MaritalStatus;
+import com.csra.utility.fhir.FhirUtility;
+import com.csra.utility.fhir.ObjectFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class MaritalStatusMapper {
             Coding coding = codings.get(0);
             MaritalStatus maritalStatus = new MaritalStatus();
             maritalStatus.setIen(coding.getId());
-            maritalStatus.setAbbreviation(coding.getCode());
-            maritalStatus.setName(coding.getDisplay());
+            maritalStatus.setAbbreviation(coding.getCode().getValue());
+            maritalStatus.setName(coding.getDisplay().getValue());
             return maritalStatus;
         } else {
             return new MaritalStatus();
@@ -30,13 +32,13 @@ public class MaritalStatusMapper {
     public CodeableConcept asCodeableConcept (MaritalStatus maritalStatus) {
         try {
             if (maritalStatus == null) {
-                return new CodeableConcept();
+                return (CodeableConcept) ObjectFactory.getObject("codeableconcept");
             } else {
-                CodeableConcept codeableConcept = new CodeableConcept();
-                Coding coding = new Coding();
+                CodeableConcept codeableConcept = (CodeableConcept) ObjectFactory.getObject("codeableconcept");
+                Coding coding = (Coding) ObjectFactory.getObject("coding");
                 coding.setId(maritalStatus.getIen());
-                coding.setDisplay(maritalStatus.getName());
-                coding.setCode(maritalStatus.getAbbreviation());
+                coding.setDisplay(FhirUtility.convert(maritalStatus.getName()));
+                coding.setCode(FhirUtility.createCode(maritalStatus.getAbbreviation()));
                 codeableConcept.getCoding().add(coding);
                 return codeableConcept;
             }

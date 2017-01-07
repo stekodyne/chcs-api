@@ -25,12 +25,13 @@
 		<mapstruct.version>1.1.0.Final</mapstruct.version>
 		<lombok.version>1.16.12</lombok.version>
         <lombok-plugin.version>1.16.12.0</lombok-plugin.version>
-		<fhir.version>1.0-SNAPSHOT</fhir.version>
+		<fhir.version>1.1-SNAPSHOT</fhir.version>
 		<cache.version>2011.1.2</cache.version>
 		<mockito.version>1.9.5</mockito.version>
         <hibernate.version>4.2.19.Final</hibernate.version>
         <hibernate-jpa.version>1.0.1.Final</hibernate-jpa.version>
         <springfox.version>2.6.1</springfox.version>
+		<legacy-api.version>0.0.1-SNAPSHOT</legacy-api.version>
 	</properties>
 
 	<dependencies>
@@ -109,7 +110,7 @@
 		<dependency>
 			<groupId>com.qbase</groupId>
 			<artifactId>legacy-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${legacy-api.version}</version>
 			<scope>compile</scope>
             <exclusions>
                 <exclusion>

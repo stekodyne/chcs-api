@@ -1,6 +1,7 @@
 package com.csra.controller.fhir;
 
 import com.csra.fhir.Conformance;
+import com.csra.utility.fhir.ChcsApiUtility;
 import com.csra.utility.fhir.ObjectFactory;
 import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,15 +36,16 @@ public class ConformanceController extends RootController {
 
         try {
             Conformance conformance = (Conformance) ObjectFactory.getObject("conformance");
-            conformance.setId(UUID.randomUUID().toString());
+            conformance.setId(FhirUtility.createId());
             conformance.setUrl(FhirUtility.createUri(request.getRequestURI()));
-            conformance.setStatus(FhirUtility.CONFORMANCE_STATUS.DRAFT.name());
-            conformance.setExperimental(FhirUtility.BOOLEAN.TRUE.bool);
-            conformance.setFhirVersion(FhirUtility.FHIR_VERSION.getValue());
+            conformance.setStatus(FhirUtility.ConformanceStatus.DRAFT.code);
+            conformance.setExperimental(FhirUtility.Boolean.TRUE.bool);
+            conformance.setFhirVersion(FhirUtility.FHIR_VERSION);
             conformance.setDate(FhirUtility.convertDateTime(new Date()));
-            conformance.getProfile().add(ForecastUtil.PROFILEs.FORECAST_IMMUNIZATION.reference);
-            conformance.getProfile().add(ForecastUtil.PROFILEs.FORECAST_PATIENT.reference);
-            conformance.getFormat().add("json");
+            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_MEDICATIONORDER.reference);
+            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_PATIENT.reference);
+            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_DEVICEMETRIC.reference);
+            conformance.getFormat().add(FhirUtility.Format.JSON.code);
 
             response = new ResponseEntity<String>(objectMapper.writeValueAsString(conformance), HttpStatus.OK);
         } catch (JsonProcessingException e) {

@@ -1,6 +1,8 @@
 package com.csra.mapstruct.mapper;
 
 import com.csra.fhir.Reference;
+import com.csra.utility.fhir.FhirUtility;
+import com.csra.utility.fhir.ObjectFactory;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
 
@@ -11,14 +13,14 @@ import java.util.UUID;
 public class ReferenceMapper {
 
     public String asString (Reference reference) {
-        return new String(reference.getDisplay());
+        return new String(reference.getDisplay().getValue());
     }
 
     public Reference asReference (String item) {
         try {
-            Reference reference = new Reference();
-            reference.setId(UUID.randomUUID().toString());
-            reference.setDisplay(item);
+            Reference reference = (Reference) ObjectFactory.getObject("reference");
+            reference.setId(FhirUtility.createUuid().getValue());
+            reference.setDisplay(FhirUtility.createString(item));
             return reference;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -2,7 +2,6 @@ package com.csra.utility.fhir;
 
 import com.csra.fhir.Id;
 import com.csra.fhir.Reference;
-import com.csra.fhir.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,36 +12,32 @@ public abstract class ChcsApiUtility {
 
     private static Logger log = LoggerFactory.getLogger(ChcsApiUtility.class);
 
-    public enum PROFILEs {
+    public enum Profile {
 
-        FORECAST_IMPLEMENTATIONGUIDE(URIs.FORECAST_IMPLEMENTATIONGUIDE), FORECAST_PATIENT(
-                URIs.FORECAST_PATIENT), FORECAST_IMMUNIZATION(
-                URIs.FORECAST_IMMUNIZATION), FORECAST_IMMUNIZATIONRECOMMENDATION(
-                URIs.FORECAST_IMMUNIZATIONRECOMMENDATION), FORECAST_IMMUNIZATIONRECOMMENDATIONRECOMMENDATION(
-                URIs.FORECAST_IMMUNIZATIONRECOMMENDATIONRECOMMENDATION);
+        CHCSAPI_PATIENT(Uri.CHCSAPI_PATIENT),
+        CHCSAPI_MEDICATIONORDER(Uri.CHCSAPI_MEDICATIONORDER),
+        CHCSAPI_DEVICEMETRIC(Uri.CHCSAPI_DEVICEMETRIC);
 
         public final Reference reference;
 
-        PROFILEs(URIs reference) {
+        Profile(Uri reference) {
             this.reference = (Reference) ObjectFactory.getObject("reference");
             this.reference.setId(FhirUtility.createId().getValue());
-            this.reference.setReference(reference.uri.getValue());
+            this.reference.setReference(FhirUtility.convert(reference.uri.getValue()));
         }
     }
 
-    public enum URIs {
+    public enum Uri {
 
-        FORECAST_IMPLEMENTATIONGUIDE("ForecastImplementationGuide"), FORECAST_PATIENT(
-                "ForecastPatient"), FORECAST_IMMUNIZATION(
-                "ForecastImmunization"), FORECAST_IMMUNIZATIONRECOMMENDATION(
-                "ForecastImmunizationRecommendation"), FORECAST_IMMUNIZATIONRECOMMENDATIONRECOMMENDATION(
-                "ForecastImmunizationRecommendationRecommendation"), FORECAST_CONFORMANCE(
-                "Conformance");
+        CHCSAPI_PATIENT("ChcsApiPatient"),
+        CHCSAPI_MEDICATIONORDER("ChcsApiMedicationOrder"),
+        CHCSAPI_DEVICEMETRIC("ChcsApiDeviceMetric"),
+        CHCSAPI_CONFORMANCE("ChcsApiConformance");
 
-        public final Uri uri;
+        public final com.csra.fhir.Uri uri;
 
-        URIs(String uri) {
-            this.uri = (Uri) ObjectFactory.getObject("uri");
+        Uri(String uri) {
+            this.uri = (com.csra.fhir.Uri) ObjectFactory.getObject("uri");
             this.uri.setId(((Id) ObjectFactory.getObject("Id")).getValue());
             this.uri.setValue(uri);
         }
