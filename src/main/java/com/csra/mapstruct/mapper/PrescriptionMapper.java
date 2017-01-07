@@ -4,6 +4,7 @@ import com.csra.fhir.Bundle;
 import com.csra.fhir.BundleEntry;
 import com.csra.fhir.BundleType;
 import com.csra.fhir.BundleTypeList;
+import com.csra.fhir.MedicationOrder;
 import com.csra.fhir.ResourceContainer;
 import com.csra.model.Prescription;
 import org.mapstruct.InheritInverseConfiguration;
@@ -45,7 +46,7 @@ public interface PrescriptionMapper {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
             resourceContainer.setMedicationOrder(this.prescriptionToFhirMedicationOrder(resource));
-            bundleEntry.setResource(resourceContainer);
+            bundleEntry.setResource(this.prescriptionToFhirMedicationOrder(resource));
             bundle.getEntry().add(bundleEntry);
         }
 

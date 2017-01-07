@@ -1,6 +1,6 @@
 package com.csra.controller.fhir;
 
-import com.csra.utility.FhirFactory;
+import com.csra.utility.fhir.ObjectFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,7 +34,7 @@ public class ObjectController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirFactory.getObject(objectType.toLowerCase())), HttpStatus.OK);
+            response = new ResponseEntity<String>(objectMapper.writeValueAsString(ObjectFactory.getObject(objectType.toLowerCase())), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }

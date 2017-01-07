@@ -1,14 +1,12 @@
-package com.csra.utility;
-
-import com.csra.fhir.ObjectFactory;
+package com.csra.utility.fhir;
 
 /**
  * Created by steffen on 12/21/16.
  */
-public class FhirFactory {
+public class ObjectFactory {
 
     public static Object getObject(String objectType) {
-        ObjectFactory objectFactory = new ObjectFactory();
+        com.csra.fhir.ObjectFactory objectFactory = new com.csra.fhir.ObjectFactory();
         Object object = null;
 
         switch (objectType) {
