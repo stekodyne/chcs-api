@@ -38,7 +38,7 @@ public abstract class ChcsApiUtility {
 
         Uri(String uri) {
             this.uri = (com.csra.fhir.Uri) ObjectFactory.getObject("uri");
-            this.uri.setId(((Id) ObjectFactory.getObject("Id")).getValue());
+            this.uri.setId(FhirUtility.createId().getValue());
             this.uri.setValue(uri);
         }
     }

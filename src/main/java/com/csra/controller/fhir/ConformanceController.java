@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Created by steffen on 12/21/16.
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class ConformanceController extends RootController {
 
     @ApiOperation(value = "getMetadata", nickname = "getMetadata")
-    @RequestMapping(method = RequestMethod.GET, path="/conformance/metadata", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path="/Conformance/metadata", produces = "application/json+fhir")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 404, message = "Not Found"),
