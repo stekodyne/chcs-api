@@ -6,6 +6,7 @@ import com.csra.fhir.Patient;
 import com.csra.mapstruct.mapper.PatientMapper;
 import com.csra.repository.PatientRepository;
 import com.csra.utility.fhir.FhirUtility;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -50,6 +51,7 @@ public class PatientController extends RootController {
             List<com.csra.model.Patient> patients = patientRepository.findAll();
 
             if (patients.size() > 0) {
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 Bundle bundle = patientMapper.patientsToFhirBundle(patients);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
@@ -78,6 +80,7 @@ public class PatientController extends RootController {
         try {
             com.csra.model.Patient p = patientRepository.findByIen(ien);
             if (p != null) {
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 Patient patient = patientMapper.patientToFhirPatient(p);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(patient), HttpStatus.OK);
             } else {

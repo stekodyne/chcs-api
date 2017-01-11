@@ -4,6 +4,8 @@ import com.csra.fhir.Bundle;
 import com.csra.fhir.BundleEntry;
 import com.csra.fhir.BundleType;
 import com.csra.fhir.BundleTypeList;
+import com.csra.fhir.Medication;
+import com.csra.fhir.MedicationOrder;
 import com.csra.fhir.ResourceContainer;
 import com.csra.model.Drug;
 import com.csra.model.Prescription;
