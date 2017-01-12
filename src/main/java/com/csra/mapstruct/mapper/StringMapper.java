@@ -1,6 +1,5 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Code;
 import com.csra.utility.fhir.FhirUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

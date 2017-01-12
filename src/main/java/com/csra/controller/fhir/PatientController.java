@@ -3,17 +3,15 @@ package com.csra.controller.fhir;
 import com.csra.fhir.Bundle;
 import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.Patient;
-import com.csra.mapstruct.mapper.PatientMapper;
-import com.csra.repository.PatientRepository;
 import com.csra.utility.fhir.FhirUtility;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import java.util.List;
 
 /**
@@ -32,11 +29,7 @@ import java.util.List;
 @RequestMapping("/fhir")
 public class PatientController extends RootController {
 
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private PatientMapper patientMapper;
+    static Logger log = LoggerFactory.getLogger(PatientController.class.getName());
 
     @ApiOperation(value = "findAll", nickname = "findAll")
     @RequestMapping(method = RequestMethod.GET, path = "/Patient", produces = "application/json+fhir")
@@ -51,7 +44,6 @@ public class PatientController extends RootController {
             List<com.csra.model.Patient> patients = patientRepository.findAll();
 
             if (patients.size() > 0) {
-                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 Bundle bundle = patientMapper.patientsToFhirBundle(patients);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
@@ -80,7 +72,6 @@ public class PatientController extends RootController {
         try {
             com.csra.model.Patient p = patientRepository.findByIen(ien);
             if (p != null) {
-                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 Patient patient = patientMapper.patientToFhirPatient(p);
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(patient), HttpStatus.OK);
             } else {

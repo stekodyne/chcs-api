@@ -1,8 +1,6 @@
 package com.csra.controller.fhir;
 
-import com.csra.fhir.Bundle;
 import com.csra.repository.DeviceRepository;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -36,7 +34,6 @@ public class DeviceMetricController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             response = new ResponseEntity<String>(objectMapper.writeValueAsString(deviceRepository.findAll()), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);

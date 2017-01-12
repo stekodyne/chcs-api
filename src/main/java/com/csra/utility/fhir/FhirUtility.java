@@ -13,7 +13,6 @@ import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.OperationOutcome;
 import com.csra.fhir.OperationOutcomeIssue;
 import com.csra.fhir.SimpleQuantity;
-import com.csra.fhir.String;
 import com.csra.fhir.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

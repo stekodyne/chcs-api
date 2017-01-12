@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 import java.util.List;
 
 /**
@@ -34,12 +35,12 @@ import java.util.List;
 @RestController
 @EnableSwagger2
 @RequestMapping("/fhir")
-public class MedicationOrderController extends RootController {
+public class ObservationController extends RootController {
 
-    static Logger log = LoggerFactory.getLogger(MedicationOrderController.class.getName());
+    static Logger log = LoggerFactory.getLogger(ObservationController.class.getName());
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path="/Observation", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
     })
@@ -67,7 +68,7 @@ public class MedicationOrderController extends RootController {
     }
 
     @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder/{ien}", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path="/Observation/{ien}", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
     })
@@ -96,7 +97,7 @@ public class MedicationOrderController extends RootController {
     }
 
     @ApiOperation(value = "createMedicationOrder", nickname = "createMedicationOrder")
-    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.POST, path="/Observation", produces = "application/json+fhir")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
     })
@@ -104,7 +105,7 @@ public class MedicationOrderController extends RootController {
             @ApiResponse(code = 201, message = "Success"),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> createMedicationOrder(@RequestBody MedicationOrder medicationOrder) throws Exception {
+    public ResponseEntity<String> createObservation(@RequestBody MedicationOrder medicationOrder) throws Exception {
         ResponseEntity<String> response = null;
 
         try {

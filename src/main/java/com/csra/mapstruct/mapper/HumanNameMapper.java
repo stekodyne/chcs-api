@@ -1,6 +1,5 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.controller.fhir.MedicationOrderController;
 import com.csra.fhir.HumanName;
 import com.csra.utility.fhir.FhirUtility;
 import com.csra.utility.fhir.ObjectFactory;

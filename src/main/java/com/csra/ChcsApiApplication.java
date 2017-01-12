@@ -1,6 +1,12 @@
 package com.csra;
 
+import com.csra.jackson.module.FhirCodeModule;
+import com.csra.jackson.module.FhirMedicationOrderStatusModule;
+import com.csra.jackson.module.FhirStringModule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +24,16 @@ public class ChcsApiApplication {
 
 	@Bean
 	public ObjectMapper objectMapper() {
-		return new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper();
+		AnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(objectMapper.getTypeFactory());
+		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		objectMapper.setAnnotationIntrospector(jaxbAnnotationIntrospector);
+
+        // Custom serializers.
+        objectMapper.registerModule(new FhirStringModule());
+        objectMapper.registerModule(new FhirCodeModule());
+        objectMapper.registerModule(new FhirMedicationOrderStatusModule());
+		return objectMapper;
 	}
 
 	@Bean

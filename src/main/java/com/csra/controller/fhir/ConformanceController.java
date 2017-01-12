@@ -4,6 +4,7 @@ import com.csra.fhir.Conformance;
 import com.csra.utility.fhir.ChcsApiUtility;
 import com.csra.utility.fhir.ObjectFactory;
 import com.csra.utility.fhir.FhirUtility;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -46,7 +47,9 @@ public class ConformanceController extends RootController {
             conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_DEVICEMETRIC.reference);
             conformance.getFormat().add(FhirUtility.Format.JSON.code);
 
+            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
             response = new ResponseEntity<String>(objectMapper.writeValueAsString(conformance), HttpStatus.OK);
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
