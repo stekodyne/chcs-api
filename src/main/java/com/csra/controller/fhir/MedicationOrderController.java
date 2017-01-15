@@ -60,6 +60,7 @@ public class MedicationOrderController extends RootController {
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
         } catch (JsonProcessingException e) {
+            log.error("{}!", e.getMessage());
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

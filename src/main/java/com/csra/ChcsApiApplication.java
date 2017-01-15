@@ -1,8 +1,16 @@
 package com.csra;
 
+import com.csra.jackson.module.FhirBooleanModule;
 import com.csra.jackson.module.FhirCodeModule;
+import com.csra.jackson.module.FhirCodingModule;
+import com.csra.jackson.module.FhirDateTimeModule;
+import com.csra.jackson.module.FhirIdModule;
+import com.csra.jackson.module.FhirIntegerModule;
 import com.csra.jackson.module.FhirMedicationOrderStatusModule;
+import com.csra.jackson.module.FhirReferenceModule;
+import com.csra.jackson.module.FhirResourceContainerModule;
 import com.csra.jackson.module.FhirStringModule;
+import com.csra.jackson.module.FhirResourceContainerModule;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,10 +37,16 @@ public class ChcsApiApplication {
 		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		objectMapper.setAnnotationIntrospector(jaxbAnnotationIntrospector);
 
-        // Custom serializers.
-        objectMapper.registerModule(new FhirStringModule());
+		objectMapper.registerModule(new FhirResourceContainerModule());
+		objectMapper.registerModule(new FhirIdModule());
+		objectMapper.registerModule(new FhirStringModule());
         objectMapper.registerModule(new FhirCodeModule());
-        objectMapper.registerModule(new FhirMedicationOrderStatusModule());
+        objectMapper.registerModule(new FhirCodingModule());
+		objectMapper.registerModule(new FhirIntegerModule());
+		objectMapper.registerModule(new FhirBooleanModule());
+		objectMapper.registerModule(new FhirDateTimeModule());
+		objectMapper.registerModule(new FhirReferenceModule());
+		objectMapper.registerModule(new FhirMedicationOrderStatusModule());
 		return objectMapper;
 	}
 

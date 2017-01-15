@@ -4,6 +4,7 @@ import com.csra.fhir.Bundle;
 import com.csra.fhir.BundleEntry;
 import com.csra.fhir.BundleType;
 import com.csra.fhir.BundleTypeList;
+import com.csra.fhir.MedicationOrder;
 import com.csra.fhir.ResourceContainer;
 import com.csra.model.Prescription;
 import org.mapstruct.InheritInverseConfiguration;
@@ -31,8 +32,7 @@ public interface PrescriptionMapper {
     @Mappings({
             @Mapping(source = "ien", target = "id"),
             @Mapping(source = "patient", target = "patient"),
-            @Mapping(source = "provider", target = "prescriber"),
-            @Mapping(source = "drug", target = "medicationReference")
+            @Mapping(source = "provider", target = "prescriber")
     })
     com.csra.fhir.MedicationOrder prescriptionToFhirMedicationOrder(Prescription prescription);
 
@@ -48,7 +48,7 @@ public interface PrescriptionMapper {
         for(Prescription resource : prescriptions) {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setMedicationOrder(this.prescriptionToFhirMedicationOrder(resource));
+            resourceContainer.setSpecificResource(this.prescriptionToFhirMedicationOrder(resource));
             bundleEntry.setResource(resourceContainer);
             bundle.getEntry().add(bundleEntry);
         }
@@ -63,7 +63,7 @@ public interface PrescriptionMapper {
             for (BundleEntry entry : bundle.getEntry()) {
                 ResourceContainer resourceContainer = entry.getResource();
                 if (resourceContainer != null) {
-                    prescriptions.add(this.prescriptionFromFhirMedicationOrder(resourceContainer.getMedicationOrder()));
+                    prescriptions.add(this.prescriptionFromFhirMedicationOrder((MedicationOrder) resourceContainer.getSpecificResource()));
                 }
             }
         }

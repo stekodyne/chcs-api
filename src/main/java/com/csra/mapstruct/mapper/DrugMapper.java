@@ -4,6 +4,7 @@ import com.csra.fhir.Bundle;
 import com.csra.fhir.BundleEntry;
 import com.csra.fhir.BundleType;
 import com.csra.fhir.BundleTypeList;
+import com.csra.fhir.Medication;
 import com.csra.fhir.ResourceContainer;
 import com.csra.model.Drug;
 import org.mapstruct.InheritInverseConfiguration;
@@ -39,7 +40,7 @@ public interface DrugMapper {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
             bundleEntry.setResource(resourceContainer);
-            bundleEntry.getResource().setMedication(this.drugToFhirMedication(resource));
+            bundleEntry.getResource().setSpecificResource(this.drugToFhirMedication(resource));
             bundle.getEntry().add(bundleEntry);
         }
 
@@ -53,7 +54,7 @@ public interface DrugMapper {
             for (BundleEntry entry : bundle.getEntry()) {
                 ResourceContainer resourceContainer = entry.getResource();
                 if (resourceContainer != null) {
-                    drugs.add(this.drugFromFhirMedicationOrder(resourceContainer.getMedication()));
+                    drugs.add(this.drugFromFhirMedicationOrder((Medication) resourceContainer.getSpecificResource()));
                 }
             }
         }
