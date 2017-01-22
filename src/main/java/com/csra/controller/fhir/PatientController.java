@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import java.util.List;
 
 /**
  * Created by steffen on 12/21/16.
@@ -41,10 +40,10 @@ public class PatientController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            List<com.csra.model.Patient> patients = patientRepository.findAll();
 
-            if (patients.size() > 0) {
-                Bundle bundle = patientMapper.patientsToFhirBundle(patients);
+            Bundle bundle = patientService.getPatients();
+
+            if (bundle.getEntry().size() > 0) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patients found!",
@@ -70,10 +69,10 @@ public class PatientController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            com.csra.model.Patient p = patientRepository.findByIen(ien);
+            Patient p = patientService.getFhirPatientFromPatient(ien);
+
             if (p != null) {
-                Patient patient = patientMapper.patientToFhirPatient(p);
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(patient), HttpStatus.OK);
+                response = new ResponseEntity<String>(objectMapper.writeValueAsString(p), HttpStatus.OK);
             } else {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patient found!",
                         IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);

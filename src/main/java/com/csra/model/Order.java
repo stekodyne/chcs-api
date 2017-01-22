@@ -1,6 +1,8 @@
 package com.csra.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +17,8 @@ import javax.persistence.Table;
 @Entity(name="Order")
 @Table(name="order", schema = "com_qbase_jp_chcs")
 @Data
-public class Order {
+@EqualsAndHashCode(callSuper=false)
+public class Order extends ChcsModel {
 
     @Id
     @Column(name="ien")

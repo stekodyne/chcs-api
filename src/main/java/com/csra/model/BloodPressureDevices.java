@@ -1,6 +1,7 @@
 package com.csra.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,8 @@ import javax.persistence.Table;
 @Entity(name="BloodPressureDevices")
 @Table(name="blood_pressure_devices", schema = "com_qbase_jp_chcs")
 @Data
-public class BloodPressureDevices {
+@EqualsAndHashCode(callSuper=false)
+public class BloodPressureDevices extends ChcsModel {
 
     @Id
     @Column(name="ien")

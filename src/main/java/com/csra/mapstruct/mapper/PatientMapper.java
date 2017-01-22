@@ -47,7 +47,7 @@ public interface PatientMapper {
         for(com.csra.model.Patient resource : patients) {
             BundleEntry bundleEntry = new BundleEntry();
             ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setSpecificResource(this.patientToFhirPatient(resource));
+            resourceContainer.setPatient(this.patientToFhirPatient(resource));
             bundleEntry.setResource(resourceContainer);
             bundle.getEntry().add(bundleEntry);
         }
@@ -62,7 +62,7 @@ public interface PatientMapper {
             for (BundleEntry entry : bundle.getEntry()) {
                 ResourceContainer resourceContainer = entry.getResource();
                 if (resourceContainer != null) {
-                    patients.add(this.patientFromFhirPatient((com.csra.fhir.Patient) resourceContainer.getSpecificResource()));
+                    patients.add(this.patientFromFhirPatient(resourceContainer.getPatient()));
                 }
             }
         }

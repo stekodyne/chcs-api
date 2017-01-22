@@ -1,6 +1,7 @@
 package com.csra.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,8 @@ import java.util.Date;
 @Entity(name="Prescription")
 @Table(name="prescription", schema = "com_qbase_jp_chcs")
 @Data
-public class Prescription {
+@EqualsAndHashCode(callSuper=false)
+public class Prescription extends ChcsModel {
 
     @Id
     @Column(name="ien")

@@ -52,9 +52,8 @@ public class ObservationController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            List<Prescription> prescriptions = prescriptionRepository.findAllByPatient(patient);
-            if (prescriptions.size() > 0) {
-                Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptions);
+            Bundle bundle = eventDatetimeService.getObservationsForPatient(patient);
+            if (bundle.getEntry().size() > 0) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescriptions found!",
@@ -67,87 +66,4 @@ public class ObservationController extends RootController {
         return response;
     }
 
-    @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path="/Observation/{ien}", produces = "application/json+fhir")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
-    })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MedicationOrder.class),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> findByIen(@PathVariable String ien) {
-        ResponseEntity<String> response = null;
-
-        try {
-            Prescription prescription = prescriptionRepository.findByIen(ien);
-
-            if (prescription != null) {
-                MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescription);
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescription found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return response;
-    }
-
-    @ApiOperation(value = "createMedicationOrder", nickname = "createMedicationOrder")
-    @RequestMapping(method = RequestMethod.POST, path="/Observation", produces = "application/json+fhir")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
-    })
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> createObservation(@RequestBody MedicationOrder medicationOrder) throws Exception {
-        ResponseEntity<String> response = null;
-
-        try {
-
-            if(medicationOrder == null) {
-                throw new Exception("MedicationOrder was null!");
-            }
-
-            Prescription prescription = prescriptionMapper.prescriptionFromFhirMedicationOrder(medicationOrder);
-            Drug drug = drugRepository.findByIen(prescription.getDrug());
-            Provider provider = providerRepository.findByIen(prescription.getProvider());
-            Patient patient = patientRepository.findByIen(prescription.getPatient());
-
-            log.debug("Patient: {}", patient);
-
-            if (patient == null || provider == null) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("Drug or Provider are missing or incomplete!",
-                        IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
-            } else {
-                com.qbase.legacy.api.dao.Patient legacyPatient = legacyPatientMapper.patientToLegacyPatient(patient);
-
-                log.debug("Legacy Patient: {}", legacyPatient);
-
-                com.qbase.legacy.api.dao.Prescription legacyPrescription = legacyPrescriptionMapper.prescriptionToLegacyPrescription(prescription, drug, provider);
-
-                log.debug("Legacy Prescription: {}", legacyPrescription);
-
-                ArrayOfDataTypes errors = chcsRepository.savePrescription(legacyPatient, legacyPrescription);
-
-                log.debug("Errors: {}", errors);
-
-                if (errors == null) {
-                    response = new ResponseEntity<String>(HttpStatus.CREATED);
-                } else {
-                    response = new ResponseEntity<String>(errors.toString(), HttpStatus.BAD_REQUEST);
-                }
-            }
-
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return response;
-    }
 }

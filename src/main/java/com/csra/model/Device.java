@@ -1,6 +1,8 @@
 package com.csra.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,7 +14,8 @@ import javax.persistence.Table;
 @Entity(name="Device")
 @Table(name="device", schema = "com_qbase_jp_chcs")
 @Data
-public class Device {
+@EqualsAndHashCode(callSuper=false)
+public class Device extends ChcsModel {
 
     @Id
     @Column(name="ien")

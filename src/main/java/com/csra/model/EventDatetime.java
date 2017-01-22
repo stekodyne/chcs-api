@@ -1,6 +1,7 @@
 package com.csra.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,10 +14,11 @@ import java.util.Date;
 /**
  * Created by steffen on 12/24/16.
  */
-@Entity(name="EventDatatime")
+@Entity(name="EventDatetime")
 @Table(name="event_datetime", schema = "com_qbase_jp_chcs")
 @Data
-public class EventDatatime {
+@EqualsAndHashCode(callSuper=false)
+public class EventDatetime extends ChcsModel {
 
     @Id
     @Column(name="ien")

@@ -194,20 +194,25 @@ public abstract class FhirUtility {
         return code;
     }
 
+    public static CodeableConcept createCodeableConcept(java.lang.String code, java.lang.String display) {
+        CodeableConcept codeableConcept = (CodeableConcept) ObjectFactory.getObject("codeableconcept");
+        Coding coding = (Coding) ObjectFactory.getObject("coding");
+
+        coding.setCode(createCode(code));
+        coding.setDisplay(convert(display));
+        codeableConcept.getCoding().add(coding);
+        return codeableConcept;
+    }
+
     public static OperationOutcome createOperationOutcome(java.lang.String message, IssueTypeList issueTypeList) {
         OperationOutcome operationOutcome = (OperationOutcome) ObjectFactory.getObject("operationoutcome");
         OperationOutcomeIssue operationOutcomeIssue = (OperationOutcomeIssue) ObjectFactory.getObject("operationoutcomeissue");
-        Coding coding = (Coding) ObjectFactory.getObject("coding");
         IssueType issueType = (IssueType) ObjectFactory.getObject("issuetype");
-        CodeableConcept codeableConcept = (CodeableConcept) ObjectFactory.getObject("codeableconcept");
 
         operationOutcomeIssue.setId(createUuid().getValue());
         issueType.setValue(issueTypeList);
         operationOutcomeIssue.setCode(issueType);
-        coding.setCode(createCode(issueType.getValue().value()));
-        coding.setDisplay(convert(message));
-        codeableConcept.getCoding().add(coding);
-        operationOutcomeIssue.setDetails(codeableConcept);
+        operationOutcomeIssue.setDetails(createCodeableConcept(issueType.getValue().value(), message));
         operationOutcome.setId(createId());
         operationOutcome.getIssue().add(operationOutcomeIssue);
         return operationOutcome;

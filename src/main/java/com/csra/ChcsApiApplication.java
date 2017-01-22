@@ -87,6 +87,39 @@ public class ChcsApiApplication {
 				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
 	}
 
+	@Bean
+	public Docket observationApi() {
+		return new Docket(DocumentationType.SWAGGER_2)
+				.groupName("Observation")
+				.apiInfo(apiInfo())
+				.select()
+				.paths(regex("/fhir/Observation.*"))
+				.build()
+				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
+	}
+
+	@Bean
+	public Docket deviceMetricApi() {
+		return new Docket(DocumentationType.SWAGGER_2)
+				.groupName("DeviceMetric")
+				.apiInfo(apiInfo())
+				.select()
+				.paths(regex("/fhir/DeviceMetric.*"))
+				.build()
+				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
+	}
+
+	@Bean
+	public Docket conformanceApi() {
+		return new Docket(DocumentationType.SWAGGER_2)
+				.groupName("Conformance")
+				.apiInfo(apiInfo())
+				.select()
+				.paths(regex("/fhir/Conformance.*"))
+				.build()
+				.directModelSubstitute(com.csra.fhir.Extension.class, Void.class);
+	}
+
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
 				.title("CHCS API")

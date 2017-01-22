@@ -3,13 +3,8 @@ package com.csra.controller.fhir;
 import com.csra.fhir.Bundle;
 import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.MedicationOrder;
-import com.csra.model.Drug;
-import com.csra.model.Patient;
-import com.csra.model.Prescription;
-import com.csra.model.Provider;
 import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.intersys.classes.ArrayOfDataTypes;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import java.util.List;
 
 /**
  * Created by steffen on 12/21/16.
@@ -51,9 +45,8 @@ public class MedicationOrderController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            List<Prescription> prescriptions = prescriptionRepository.findAllByPatient(patient);
-            if (prescriptions.size() > 0) {
-                Bundle bundle = prescriptionMapper.prescriptionsToFhirBundle(prescriptions);
+            Bundle bundle = prescriptionService.getMedicationOrdersForPatient(patient);
+            if (bundle.getEntry().size() > 0) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
             } else {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescriptions found!",
@@ -80,10 +73,9 @@ public class MedicationOrderController extends RootController {
         ResponseEntity<String> response = null;
 
         try {
-            Prescription prescription = prescriptionRepository.findByIen(ien);
+            MedicationOrder medicationOrder = prescriptionService.getMedicationOrderFromPrescription(ien);
 
-            if (prescription != null) {
-                MedicationOrder medicationOrder = prescriptionMapper.prescriptionToFhirMedicationOrder(prescription);
+            if (medicationOrder != null) {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
             } else {
                 response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescription found!",
@@ -110,42 +102,13 @@ public class MedicationOrderController extends RootController {
 
         try {
 
-            if(medicationOrder == null) {
-                throw new Exception("MedicationOrder was null!");
-            }
-
-            Prescription prescription = prescriptionMapper.prescriptionFromFhirMedicationOrder(medicationOrder);
-            Drug drug = drugRepository.findByIen(prescription.getDrug());
-            Provider provider = providerRepository.findByIen(prescription.getProvider());
-            Patient patient = patientRepository.findByIen(prescription.getPatient());
-
-            log.debug("Patient: {}", patient);
-
-            if (patient == null || provider == null) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("Drug or Provider are missing or incomplete!",
-                        IssueTypeList.INCOMPLETE)), HttpStatus.NOT_FOUND);
-            } else {
-                com.qbase.legacy.api.dao.Patient legacyPatient = legacyPatientMapper.patientToLegacyPatient(patient);
-
-                log.debug("Legacy Patient: {}", legacyPatient);
-
-                com.qbase.legacy.api.dao.Prescription legacyPrescription = legacyPrescriptionMapper.prescriptionToLegacyPrescription(prescription, drug, provider);
-
-                log.debug("Legacy Prescription: {}", legacyPrescription);
-
-                ArrayOfDataTypes errors = chcsRepository.savePrescription(legacyPatient, legacyPrescription);
-
-                log.debug("Errors: {}", errors);
-
-                if (errors == null) {
-                    response = new ResponseEntity<String>(HttpStatus.CREATED);
-                } else {
-                    response = new ResponseEntity<String>(errors.toString(), HttpStatus.BAD_REQUEST);
-                }
-            }
+            prescriptionService.createPrescription(medicationOrder);
 
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome(e.getMessage(),
+                    IssueTypeList.EXCEPTION)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return response;

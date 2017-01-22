@@ -1,15 +1,9 @@
 package com.csra.controller.fhir;
 
-import com.csra.mapstruct.mapper.LegacyPatientMapper;
-import com.csra.mapstruct.mapper.LegacyPrescriptionMapper;
-import com.csra.mapstruct.mapper.PatientMapper;
-import com.csra.mapstruct.mapper.PrescriptionMapper;
-import com.csra.repository.DrugRepository;
-import com.csra.repository.PatientRepository;
-import com.csra.repository.PrescriptionRepository;
-import com.csra.repository.ProviderRepository;
+import com.csra.service.EventDatetimeService;
+import com.csra.service.PatientService;
+import com.csra.service.PrescriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qbase.legacy.api.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -25,30 +19,12 @@ public abstract class RootController {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected PrescriptionRepository prescriptionRepository;
+    protected PrescriptionService prescriptionService;
 
     @Autowired
-    protected DrugRepository drugRepository;
+    protected PatientService patientService;
 
     @Autowired
-    protected ProviderRepository providerRepository;
-
-    @Autowired
-    protected PatientRepository patientRepository;
-
-    @Autowired
-    protected PrescriptionMapper prescriptionMapper;
-
-    @Autowired
-    protected PatientMapper patientMapper;
-
-    @Autowired
-    protected IRepository chcsRepository;
-
-    @Autowired
-    protected LegacyPatientMapper legacyPatientMapper;
-
-    @Autowired
-    protected LegacyPrescriptionMapper legacyPrescriptionMapper;
+    protected EventDatetimeService eventDatetimeService;
 
 }
