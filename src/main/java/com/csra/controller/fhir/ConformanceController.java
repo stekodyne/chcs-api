@@ -45,6 +45,7 @@ public class ConformanceController extends RootController {
             conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_MEDICATIONORDER.reference);
             conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_PATIENT.reference);
             conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_DEVICEMETRIC.reference);
+            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_OBSERVATION.reference);
             conformance.getFormat().add(FhirUtility.Format.JSON.code);
 
             objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);

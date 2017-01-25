@@ -5,6 +5,7 @@ import com.csra.fhir.IssueTypeList;
 import com.csra.fhir.Patient;
 import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
