@@ -139,6 +139,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.github.swagger2markup</groupId>
+            <artifactId>swagger2markup-extension-commons</artifactId>
+            <version>${swagger2markup.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger.version}</version>
@@ -163,6 +170,16 @@
             <artifactId>mockito-all</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.swagger2markup</groupId>
+            <artifactId>swagger2markup</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.swagger2markup</groupId>
+            <artifactId>swagger2markup-extension-commons</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
 
@@ -346,7 +363,7 @@
                 </dependencies>
                 <configuration>
                     <sourceDirectory>${asciidoctor.input.directory}</sourceDirectory>
-                    <sourceDocumentName>index.adoc</sourceDocumentName>
+                    <sourceDocumentName>chcs-api.adoc</sourceDocumentName>
                     <attributes>
                         <doctype>book</doctype>
                         <toc>left</toc>
