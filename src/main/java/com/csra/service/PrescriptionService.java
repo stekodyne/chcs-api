@@ -1,26 +1,24 @@
 package com.csra.service;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.BundleEntry;
-import com.csra.fhir.BundleType;
-import com.csra.fhir.BundleTypeList;
-import com.csra.fhir.MedicationOrder;
-import com.csra.fhir.ResourceContainer;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.api.BundleEntry;
+import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
+import ca.uhn.fhir.model.primitive.BoundCodeDt;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import com.csra.model.ChcsModel;
 import com.csra.model.Drug;
 import com.csra.model.Patient;
 import com.csra.model.Prescription;
 import com.csra.model.Provider;
-import com.csra.utility.fhir.ObjectFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.intersys.classes.ArrayOfDataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * Created by steffen on 1/21/17.
@@ -88,19 +86,16 @@ public class PrescriptionService extends RootService {
     }
 
     public Bundle getMedicationOrdersForPatient(String patientIen) {
-        Bundle bundle = (Bundle) ObjectFactory.getObject("bundle");
-        BundleType bundleType = (BundleType) ObjectFactory.getObject("bundletype");
-        bundleType.setValue(BundleTypeList.COLLECTION);
+        Bundle bundle = new Bundle();
+        BoundCodeDt<BundleTypeEnum> bundleType = new BoundCodeDt<BundleTypeEnum>(BundleTypeEnum.VALUESET_BINDER, BundleTypeEnum.COLLECTION);
         bundle.setType(bundleType);
 
         List<Prescription> prescriptions = prescriptionRepository.findAllByPatient(patientIen);
 
-        for(Prescription resource : prescriptions) {
+        for (Prescription resource : prescriptions) {
             BundleEntry bundleEntry = new BundleEntry();
-            ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setMedicationOrder(getMedicationOrderFromPrescription(resource));
-            bundleEntry.setResource(resourceContainer);
-            bundle.getEntry().add(bundleEntry);
+            bundleEntry.setResource(getMedicationOrderFromPrescription(resource));
+            bundle.getEntries().add(bundleEntry);
         }
 
         return bundle;
@@ -109,7 +104,7 @@ public class PrescriptionService extends RootService {
     public void createPrescription(MedicationOrder medicationOrder) throws Exception {
         try {
 
-            if(medicationOrder == null) {
+            if (medicationOrder == null) {
                 throw new Exception("MedicationOrder was null!");
             }
 

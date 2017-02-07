@@ -11,23 +11,23 @@ import javax.persistence.Table;
 /**
  * Created by steffen on 12/24/16.
  */
-@Entity(name="QbasePatientEventMonitoring1")
-@Table(name="qbase_patient_event_monitoring_1", schema = "com_qbase_jp_chcs")
+@Entity(name = "QbasePatientEventMonitoring1")
+@Table(name = "qbase_patient_event_monitoring_1", schema = "com_qbase_jp_chcs")
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class QbasePatientEventMonitoring1 extends ChcsModel {
 
     @Id
-    @Column(name="ien")
+    @Column(name = "ien")
     String ien;
 
-    @Column(name="name")
+    @Column(name = "name")
     String name;
 
-    @Column(name="serial_number")
+    @Column(name = "serial_number")
     String serialNumber;
 
-    @Column(name="device_Manufacturer")
+    @Column(name = "device_Manufacturer")
     String deviceManufacturer;
 
 }

@@ -1,13 +1,11 @@
 package com.csra.service;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.BundleEntry;
-import com.csra.fhir.BundleType;
-import com.csra.fhir.BundleTypeList;
-import com.csra.fhir.Observation;
-import com.csra.fhir.ResourceContainer;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.api.BundleEntry;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.fhir.model.primitive.BoundCodeDt;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import com.csra.model.EventDatetime5300101;
-import com.csra.utility.fhir.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,19 +29,16 @@ public class EventDatetimeService extends RootService {
     }
 
     public Bundle getObservationsForPatient(String patientIen) {
-        Bundle bundle = (Bundle) ObjectFactory.getObject("bundle");
-        BundleType bundleType = (BundleType) ObjectFactory.getObject("bundletype");
-        bundleType.setValue(BundleTypeList.COLLECTION);
+        Bundle bundle = new Bundle();
+        BoundCodeDt<BundleTypeEnum> bundleType = new BoundCodeDt<BundleTypeEnum>(BundleTypeEnum.VALUESET_BINDER, BundleTypeEnum.COLLECTION);
         bundle.setType(bundleType);
 
         List<EventDatetime5300101> events = eventDatetimeRepository.findAllByPatient(patientIen);
 
-        for(EventDatetime5300101 resource : events) {
+        for (EventDatetime5300101 resource : events) {
             BundleEntry bundleEntry = new BundleEntry();
-            ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setObservation(getObservationFromEventDatetime(resource));
-            bundleEntry.setResource(resourceContainer);
-            bundle.getEntry().add(bundleEntry);
+            bundleEntry.setResource(getObservationFromEventDatetime(resource));
+            bundle.getEntries().add(bundleEntry);
         }
 
         return bundle;

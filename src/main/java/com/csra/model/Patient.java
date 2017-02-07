@@ -3,6 +3,7 @@ package com.csra.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,65 +15,64 @@ import java.util.Date;
 
 /**
  * Created by steffen on 12/21/16.
- *
  */
-@Entity(name="Patient")
-@Table(name="patient", schema = "com_qbase_jp_chcs")
+@Entity(name = "Patient")
+@Table(name = "patient", schema = "com_qbase_jp_chcs")
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Patient extends ChcsModel {
 
     @Id
-    @Column(name="patient_identifier")
+    @Column(name = "patient_identifier")
     private String id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="ien")
+    @Column(name = "ien")
     private String ien;
 
-    @Column(name="ssn")
+    @Column(name = "ssn")
     private String ssn;
 
-    @Column(name="sex")
+    @Column(name = "sex")
     private String sex;
 
-    @Column(name="dob")
-    @Type(type="date")
+    @Column(name = "dob")
+    @Type(type = "date")
     private Date dateOfBirth;
 
-    @Column(name="street_address")
+    @Column(name = "street_address")
     private String streetAddress;
 
-    @Column(name="city")
+    @Column(name = "city")
     private String city;
 
-    @OneToOne(optional=false)
-    @JoinColumn(name = "state", referencedColumnName="ien")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "state", referencedColumnName = "ien")
     private GeographicLocation state;
 
-    @Column(name="zip_code")
+    @Column(name = "zip_code")
     private String zipCode;
 
-    @Column(name="phone")
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name="office_phone")
+    @Column(name = "office_phone")
     private String officePhone;
 
-    @OneToOne(optional=true)
-    @JoinColumn(name = "marital_status", referencedColumnName="ien")
+    @OneToOne(optional = true)
+    @JoinColumn(name = "marital_status", referencedColumnName = "ien")
     private MaritalStatus maritalStatus;
 
-    @OneToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name = "race", referencedColumnName="ien")
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "race", referencedColumnName = "ien")
     private Race race;
 
-    @Column(name="pob_city")
+    @Column(name = "pob_city")
     private String pobCity;
 
-    @OneToOne(optional=false)
-    @JoinColumn(name = "pob_state", referencedColumnName="ien")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "pob_state", referencedColumnName = "ien")
     private GeographicLocation pobState;
 }

@@ -25,7 +25,6 @@
         <mapstruct.version>1.1.0.Final</mapstruct.version>
         <lombok.version>1.16.12</lombok.version>
         <lombok-plugin.version>1.16.12.0</lombok-plugin.version>
-        <fhir.version>1.5-SNAPSHOT</fhir.version>
         <cache.version>2011.1.2</cache.version>
         <mockito.version>1.9.5</mockito.version>
         <hibernate.version>4.2.19.Final</hibernate.version>
@@ -44,9 +43,15 @@
         <asciidoctor.html.output.directory>${project.build.directory}/asciidoc/html</asciidoctor.html.output.directory>
         <asciidoctor.pdf.output.directory>${project.build.directory}/asciidoc/pdf</asciidoctor.pdf.output.directory>
         <swagger.input>${swagger.output.dir}</swagger.input>
+        <hapi-fhir.version>2.2</hapi-fhir.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu2</artifactId>
+            <version>${hapi-fhir.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -83,11 +88,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.csra</groupId>
-            <artifactId>fhir</artifactId>
-            <version>${fhir.version}</version>
         </dependency>
         <dependency>
             <groupId>cache</groupId>
@@ -286,17 +286,6 @@
                         <configuration>
                             <swaggerInput>${swagger.input}/medicationorder/swagger.json</swaggerInput>
                             <outputDir>${generated.asciidoc.directory}/medicationorder</outputDir>
-                        </configuration>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>convertSwagger2markup</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stub</id>
-                        <configuration>
-                            <swaggerInput>${swagger.input}/stub/swagger.json</swaggerInput>
-                            <outputDir>${generated.asciidoc.directory}/stub</outputDir>
                         </configuration>
                         <phase>test</phase>
                         <goals>

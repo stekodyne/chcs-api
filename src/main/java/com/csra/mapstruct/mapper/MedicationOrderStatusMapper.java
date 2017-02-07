@@ -1,9 +1,8 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.MedicationOrderStatus;
-import com.csra.fhir.MedicationOrderStatusList;
+import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
+import ca.uhn.fhir.model.primitive.BoundCodeDt;
 import org.springframework.stereotype.Component;
-import java.util.UUID;
 
 /**
  * Created by steffen on 12/27/16.
@@ -11,18 +10,17 @@ import java.util.UUID;
 @Component
 public class MedicationOrderStatusMapper {
 
-    public String asString (MedicationOrderStatus status) {
-        return new String(status.getValue().value());
+    public String asString(BoundCodeDt<MedicationOrderStatusEnum> status) {
+        return new String(status.getValue());
     }
 
-    public MedicationOrderStatus asMedicationOrderStatus (String source) {
+    public BoundCodeDt<MedicationOrderStatusEnum> asMedicationOrderStatus(String source) {
         try {
-            MedicationOrderStatus status = new MedicationOrderStatus();
-            status.setId(UUID.randomUUID().toString());
+            BoundCodeDt<MedicationOrderStatusEnum> status = null;
             try {
-                status.setValue(MedicationOrderStatusList.fromValue(source));
+                status = new BoundCodeDt<MedicationOrderStatusEnum>(MedicationOrderStatusEnum.VALUESET_BINDER, MedicationOrderStatusEnum.forCode(source));
             } catch (IllegalArgumentException ex) {
-                status.setValue(MedicationOrderStatusList.COMPLETED);
+                status = new BoundCodeDt<MedicationOrderStatusEnum>(MedicationOrderStatusEnum.VALUESET_BINDER, MedicationOrderStatusEnum.ON_HOLD);
             }
             return status;
         } catch (Exception e) {

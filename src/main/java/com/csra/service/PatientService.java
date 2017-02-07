@@ -1,12 +1,10 @@
 package com.csra.service;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.BundleEntry;
-import com.csra.fhir.BundleType;
-import com.csra.fhir.BundleTypeList;
-import com.csra.fhir.ResourceContainer;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.api.BundleEntry;
+import ca.uhn.fhir.model.primitive.BoundCodeDt;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import com.csra.model.Patient;
-import com.csra.utility.fhir.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,8 +27,8 @@ public class PatientService extends RootService {
         return patient;
     }
 
-    public com.csra.fhir.Patient getFhirPatientFromPatient(String ien) {
-        com.csra.fhir.Patient patient = null;
+    public ca.uhn.fhir.model.dstu2.resource.Patient getFhirPatientFromPatient(String ien) {
+        ca.uhn.fhir.model.dstu2.resource.Patient patient = null;
         Patient p = getPatient(ien);
 
         patient = patientMapper.patientToFhirPatient(p);
@@ -39,19 +37,16 @@ public class PatientService extends RootService {
     }
 
     public Bundle getPatients() {
-        Bundle bundle = (Bundle) ObjectFactory.getObject("bundle");
-        BundleType bundleType = (BundleType) ObjectFactory.getObject("bundletype");
-        bundleType.setValue(BundleTypeList.COLLECTION);
+        Bundle bundle = new Bundle();
+        BoundCodeDt<BundleTypeEnum> bundleType = new BoundCodeDt<BundleTypeEnum>(BundleTypeEnum.VALUESET_BINDER, BundleTypeEnum.COLLECTION);
         bundle.setType(bundleType);
 
         List<Patient> prescriptions = patientRepository.findAll();
 
-        for(Patient resource : prescriptions) {
+        for (Patient resource : prescriptions) {
             BundleEntry bundleEntry = new BundleEntry();
-            ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setPatient(patientMapper.patientToFhirPatient(resource));
-            bundleEntry.setResource(resourceContainer);
-            bundle.getEntry().add(bundleEntry);
+            bundleEntry.setResource(patientMapper.patientToFhirPatient(resource));
+            bundle.getEntries().add(bundleEntry);
         }
 
         return bundle;

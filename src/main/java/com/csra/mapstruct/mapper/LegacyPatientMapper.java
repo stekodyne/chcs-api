@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LegacyPatientMapper {
 
-    LegacyPatientMapper INSTANCE = Mappers.getMapper( LegacyPatientMapper.class );
+    LegacyPatientMapper INSTANCE = Mappers.getMapper(LegacyPatientMapper.class);
 
     @Mappings({
             @Mapping(source = "ien", target = "ien"),

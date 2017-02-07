@@ -1,6 +1,7 @@
 package com.csra.utility.fhir;
 
-import com.csra.fhir.Reference;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.primitive.UriDt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +19,11 @@ public abstract class ChcsApiUtility {
         CHCSAPI_OBSERVATION(Uri.CHCSAPI_OBSERVATION),
         CHCSAPI_DEVICEMETRIC(Uri.CHCSAPI_DEVICEMETRIC);
 
-        public final Reference reference;
+        public final ResourceReferenceDt reference;
 
         Profile(Uri reference) {
-            this.reference = (Reference) ObjectFactory.getObject("reference");
-            this.reference.setId(FhirUtility.createId().getValue());
-            this.reference.setReference(FhirUtility.convert(reference.uri.getValue()));
+            this.reference = new ResourceReferenceDt();
+            this.reference.setReference(reference.uri.getValue());
         }
     }
 
@@ -35,11 +35,10 @@ public abstract class ChcsApiUtility {
         CHCSAPI_OBSERVATION("ChcsApiObservation"),
         CHCSAPI_CONFORMANCE("ChcsApiConformance");
 
-        public final com.csra.fhir.Uri uri;
+        public final ca.uhn.fhir.model.primitive.UriDt uri;
 
         Uri(String uri) {
-            this.uri = (com.csra.fhir.Uri) ObjectFactory.getObject("uri");
-            this.uri.setId(FhirUtility.createId().getValue());
+            this.uri = new UriDt();
             this.uri.setValue(uri);
         }
     }

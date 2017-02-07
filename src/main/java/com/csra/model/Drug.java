@@ -11,14 +11,14 @@ import javax.persistence.Table;
 /**
  * Created by steffen on 12/24/16.
  */
-@Entity(name="Drug")
-@Table(name="drug", schema = "com_qbase_jp_chcs")
+@Entity(name = "Drug")
+@Table(name = "drug", schema = "com_qbase_jp_chcs")
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Drug extends ChcsModel {
 
     @Id
-    @Column(name="ien")
+    @Column(name = "ien")
     String ien;
 
     @Column(name = "name")

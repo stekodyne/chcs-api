@@ -1,10 +1,10 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.CodeableConcept;
-import com.csra.fhir.Coding;
+import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import ca.uhn.fhir.model.dstu2.valueset.MaritalStatusCodesEnum;
 import com.csra.model.MaritalStatus;
-import com.csra.utility.fhir.FhirUtility;
-import com.csra.utility.fhir.ObjectFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,32 +15,26 @@ import java.util.List;
 @Component
 public class MaritalStatusMapper {
 
-    public MaritalStatus asMaritalStatus (CodeableConcept codeableConcept) {
-        List<Coding> codings = codeableConcept.getCoding();
-        if(codings.size() > 0) {
-            Coding coding = codings.get(0);
+    public MaritalStatus asMaritalStatus(BoundCodeableConceptDt<MaritalStatusCodesEnum> maritalStatusCodesEnum) {
+        List<CodingDt> codings = maritalStatusCodesEnum.getCoding();
+        if (codings.size() > 0) {
+            CodingDt coding = codings.get(0);
             MaritalStatus maritalStatus = new MaritalStatus();
-            maritalStatus.setIen(coding.getId());
-            maritalStatus.setAbbreviation(coding.getCode().getValue());
-            maritalStatus.setName(coding.getDisplay().getValue());
+            maritalStatus.setIen(coding.getId().getValue());
+            maritalStatus.setAbbreviation(coding.getCode());
+            maritalStatus.setName(coding.getDisplay());
             return maritalStatus;
         } else {
             return new MaritalStatus();
         }
     }
 
-    public CodeableConcept asCodeableConcept (MaritalStatus maritalStatus) {
+    public BoundCodeableConceptDt<MaritalStatusCodesEnum> asCodeableConcept(MaritalStatus maritalStatus) {
         try {
             if (maritalStatus == null) {
-                return (CodeableConcept) ObjectFactory.getObject("codeableconcept");
+                return new BoundCodeableConceptDt<MaritalStatusCodesEnum>(MaritalStatusCodesEnum.VALUESET_BINDER, MaritalStatusCodesEnum.UNK);
             } else {
-                CodeableConcept codeableConcept = (CodeableConcept) ObjectFactory.getObject("codeableconcept");
-                Coding coding = (Coding) ObjectFactory.getObject("coding");
-                coding.setId(maritalStatus.getIen());
-                coding.setDisplay(FhirUtility.convert(maritalStatus.getName()));
-                coding.setCode(FhirUtility.createCode(maritalStatus.getAbbreviation()));
-                codeableConcept.getCoding().add(coding);
-                return codeableConcept;
+                return new BoundCodeableConceptDt<MaritalStatusCodesEnum>(MaritalStatusCodesEnum.VALUESET_BINDER, MaritalStatusCodesEnum.forCode(maritalStatus.getAbbreviation()));
             }
         } catch (Exception e) {
             e.printStackTrace();

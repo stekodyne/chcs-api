@@ -1,6 +1,6 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Observation;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
 import com.csra.model.EventDatetime5300101;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {ReferenceMapper.class, IdMapper.class})
 public interface ObservationMapper {
 
-    ObservationMapper INSTANCE = Mappers.getMapper( ObservationMapper.class );
+    ObservationMapper INSTANCE = Mappers.getMapper(ObservationMapper.class);
 
     static Logger log = LoggerFactory.getLogger(ObservationMapper.class.getName());
 

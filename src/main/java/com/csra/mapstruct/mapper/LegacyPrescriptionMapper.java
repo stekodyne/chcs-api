@@ -16,7 +16,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LegacyPrescriptionMapper {
 
-    LegacyPrescriptionMapper INSTANCE = Mappers.getMapper( LegacyPrescriptionMapper.class );
+    LegacyPrescriptionMapper INSTANCE = Mappers.getMapper(LegacyPrescriptionMapper.class);
 
     @Mappings({
             @Mapping(target = "ien", expression = "java( null )"),

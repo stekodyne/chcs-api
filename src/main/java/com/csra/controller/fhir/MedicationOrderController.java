@@ -1,8 +1,8 @@
 package com.csra.controller.fhir;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.IssueTypeList;
-import com.csra.fhir.MedicationOrder;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
+import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import com.csra.utility.fhir.FhirUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
@@ -33,9 +33,9 @@ public class MedicationOrderController extends RootController {
     static Logger log = LoggerFactory.getLogger(MedicationOrderController.class.getName());
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path = "/MedicationOrder", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
+            @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue = "67")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Bundle.class),
@@ -44,26 +44,21 @@ public class MedicationOrderController extends RootController {
     public ResponseEntity<String> findAllByPatient(@RequestParam String patient) {
         ResponseEntity<String> response = null;
 
-        try {
-            Bundle bundle = prescriptionService.getMedicationOrdersForPatient(patient);
-            if (bundle.getEntry().size() > 0) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescriptions found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            log.error("{}!", e.getMessage());
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        Bundle bundle = prescriptionService.getMedicationOrdersForPatient(patient);
+        if (bundle.getEntries().size() > 0) {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeBundleToString(bundle), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No prescriptions found!",
+                    IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
         }
 
         return response;
     }
 
     @ApiOperation(value = "findByIen", nickname = "findByIen")
-    @RequestMapping(method = RequestMethod.GET, path="/MedicationOrder/{ien}", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path = "/MedicationOrder/{ien}", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue="67")
+            @ApiImplicitParam(name = "ien", value = "Medications's IEN", required = true, dataType = "string", paramType = "path", defaultValue = "67")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = MedicationOrder.class),
@@ -72,26 +67,22 @@ public class MedicationOrderController extends RootController {
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
         ResponseEntity<String> response = null;
 
-        try {
-            MedicationOrder medicationOrder = prescriptionService.getMedicationOrderFromPrescription(ien);
+        MedicationOrder medicationOrder = prescriptionService.getMedicationOrderFromPrescription(ien);
 
-            if (medicationOrder != null) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(medicationOrder), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No prescription found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (medicationOrder != null) {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(medicationOrder), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No prescription found!",
+                    IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
         }
 
         return response;
     }
 
     @ApiOperation(value = "createMedicationOrder", nickname = "createMedicationOrder")
-    @RequestMapping(method = RequestMethod.POST, path="/MedicationOrder", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.POST, path = "/MedicationOrder", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue="")
+            @ApiImplicitParam(name = "medicationOrder", value = "FHIR MedicationOrder", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success"),
@@ -107,8 +98,8 @@ public class MedicationOrderController extends RootController {
         } catch (JsonProcessingException e) {
             response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome(e.getMessage(),
-                    IssueTypeList.EXCEPTION)), HttpStatus.INTERNAL_SERVER_ERROR);
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome(e.getMessage(),
+                    IssueTypeEnum.EXCEPTION)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return response;

@@ -1,7 +1,6 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Id;
-import com.csra.utility.fhir.FhirUtility;
+import ca.uhn.fhir.model.primitive.IdDt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,13 +13,13 @@ public class IdMapper {
 
     static Logger log = LoggerFactory.getLogger(IdMapper.class.getName());
 
-    public String asString (Id id) {
+    public String asString(IdDt id) {
         return new String(id.getValue());
     }
 
-    public Id asId (String value) {
+    public IdDt asId(String value) {
         try {
-            return FhirUtility.createId(value);
+            return new IdDt(value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

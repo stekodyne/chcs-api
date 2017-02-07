@@ -1,19 +1,8 @@
 package com.csra;
 
-import com.csra.jackson.module.FhirBooleanModule;
-import com.csra.jackson.module.FhirCodeModule;
-import com.csra.jackson.module.FhirCodingModule;
-import com.csra.jackson.module.FhirDateTimeModule;
-import com.csra.jackson.module.FhirIdModule;
-import com.csra.jackson.module.FhirIntegerModule;
-import com.csra.jackson.module.FhirMedicationOrderStatusModule;
-import com.csra.jackson.module.FhirReferenceModule;
-import com.csra.jackson.module.FhirResourceContainerModule;
-import com.csra.jackson.module.FhirStringModule;
+import ca.uhn.fhir.context.FhirContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.qbase.legacy.api.RepositoryFactory;
 import com.qbase.legacy.api.repository.IRepository;
 import org.springframework.boot.SpringApplication;
@@ -31,24 +20,22 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @SpringBootApplication
 public class ChcsApiApplication {
 
+    public static void main(String[] args) {
+        SpringApplication application = new SpringApplication(ChcsApiApplication.class);
+        application.run(args);
+    }
+
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        AnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(objectMapper.getTypeFactory());
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        objectMapper.setAnnotationIntrospector(jaxbAnnotationIntrospector);
-
-        objectMapper.registerModule(new FhirResourceContainerModule());
-        objectMapper.registerModule(new FhirIdModule());
-        objectMapper.registerModule(new FhirStringModule());
-        objectMapper.registerModule(new FhirCodeModule());
-        objectMapper.registerModule(new FhirCodingModule());
-        objectMapper.registerModule(new FhirIntegerModule());
-        objectMapper.registerModule(new FhirBooleanModule());
-        objectMapper.registerModule(new FhirDateTimeModule());
-        objectMapper.registerModule(new FhirReferenceModule());
-        objectMapper.registerModule(new FhirMedicationOrderStatusModule());
         return objectMapper;
+    }
+
+    @Bean
+    public FhirContext fhirContext() {
+        FhirContext fhirContext = FhirContext.forDstu2();
+        return fhirContext;
     }
 
     @Bean
@@ -64,18 +51,7 @@ public class ChcsApiApplication {
                 .select()
                 .paths(regex("/fhir/Patient.*"))
                 .build()
-                .directModelSubstitute(com.csra.fhir.Extension.class, Void.class)
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
-    }
-
-    @Bean
-    public Docket stubApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("stub")
-                .apiInfo(apiInfo("FHIR Stub API", "Spring-based FHIR REST API with a little Swagger!"))
-                .select()
-                .paths(regex("/fhir/stub.*"))
-                .build();
     }
 
     @Bean
@@ -86,7 +62,6 @@ public class ChcsApiApplication {
                 .select()
                 .paths(regex("/fhir/MedicationOrder.*"))
                 .build()
-                .directModelSubstitute(com.csra.fhir.Extension.class, Void.class)
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
     }
 
@@ -98,7 +73,6 @@ public class ChcsApiApplication {
                 .select()
                 .paths(regex("/fhir/Observation.*"))
                 .build()
-                .directModelSubstitute(com.csra.fhir.Extension.class, Void.class)
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
     }
 
@@ -110,7 +84,6 @@ public class ChcsApiApplication {
                 .select()
                 .paths(regex("/fhir/DeviceMetric.*"))
                 .build()
-                .directModelSubstitute(com.csra.fhir.Extension.class, Void.class)
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
     }
 
@@ -122,7 +95,6 @@ public class ChcsApiApplication {
                 .select()
                 .paths(regex("/fhir/Conformance.*"))
                 .build()
-                .directModelSubstitute(com.csra.fhir.Extension.class, Void.class)
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
     }
 
@@ -136,11 +108,6 @@ public class ChcsApiApplication {
                 .licenseUrl("https://github.com/IBM-Bluemix/news-aggregator/blob/master/LICENSE")
                 .version("2.0")
                 .build();
-    }
-
-    public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(ChcsApiApplication.class);
-        application.run(args);
     }
 
 }

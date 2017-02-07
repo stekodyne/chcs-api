@@ -25,7 +25,7 @@ public class DeviceMetricController extends RootController {
     private DeviceRepository deviceRepository;
 
     @ApiOperation(value = "findAll", nickname = "findAll")
-    @RequestMapping(method = RequestMethod.GET, path="/DeviceMetric", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path = "/DeviceMetric", produces = "application/json+fhir")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Object.class),
             @ApiResponse(code = 404, message = "Not Found"),

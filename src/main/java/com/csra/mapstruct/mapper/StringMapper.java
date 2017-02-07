@@ -1,6 +1,6 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.utility.fhir.FhirUtility;
+import ca.uhn.fhir.model.primitive.StringDt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,13 +13,13 @@ public class StringMapper {
 
     static Logger log = LoggerFactory.getLogger(StringMapper.class.getName());
 
-    public java.lang.String asString (com.csra.fhir.String value) {
+    public String asString(StringDt value) {
         return new String(value.getValue());
     }
 
-    public com.csra.fhir.String asString (java.lang.String value) {
+    public StringDt asString(String value) {
         try {
-            return FhirUtility.createString(value);
+            return new StringDt(value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

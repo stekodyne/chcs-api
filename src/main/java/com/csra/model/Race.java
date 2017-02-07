@@ -10,22 +10,21 @@ import javax.persistence.Table;
 
 /**
  * Created by steffen on 12/21/16.
- *
  */
-@Entity(name="race")
-@Table(name="race", schema = "com_qbase_jp_chcs")
+@Entity(name = "race")
+@Table(name = "race", schema = "com_qbase_jp_chcs")
 @Data
-@EqualsAndHashCode(callSuper=false)
-public class Race extends ChcsModel{
+@EqualsAndHashCode(callSuper = false)
+public class Race extends ChcsModel {
 
     @Id
-    @Column(name="ien")
+    @Column(name = "ien")
     private String ien;
 
-    @Column(name="code")
+    @Column(name = "code")
     private String code;
 
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
 
 }

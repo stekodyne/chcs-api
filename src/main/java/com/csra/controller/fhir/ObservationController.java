@@ -1,10 +1,9 @@
 package com.csra.controller.fhir;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.IssueTypeList;
-import com.csra.fhir.Observation;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import com.csra.utility.fhir.FhirUtility;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -32,9 +31,9 @@ public class ObservationController extends RootController {
     static Logger log = LoggerFactory.getLogger(ObservationController.class.getName());
 
     @ApiOperation(value = "findAllByPatient", nickname = "findAllByPatient")
-    @RequestMapping(method = RequestMethod.GET, path="/Observation", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path = "/Observation", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue="67")
+            @ApiImplicitParam(name = "patient", value = "Patient's IEN", required = true, dataType = "string", paramType = "query", defaultValue = "67")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Bundle.class),
@@ -43,25 +42,21 @@ public class ObservationController extends RootController {
     public ResponseEntity<String> findAllByPatient(@RequestParam String patient) {
         ResponseEntity<String> response = null;
 
-        try {
-            Bundle bundle = eventDatetimeService.getObservationsForPatient(patient);
-            if (bundle.getEntry().size() > 0) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No observations found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        Bundle bundle = eventDatetimeService.getObservationsForPatient(patient);
+        if (bundle.getEntries().size() > 0) {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeBundleToString(bundle), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No observations found!",
+                    IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
         }
 
         return response;
     }
 
     @ApiOperation(value = "createObservation", nickname = "createObservation")
-    @RequestMapping(method = RequestMethod.POST, path="/Observation", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.POST, path = "/Observation", produces = "application/json+fhir")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "observation", value = "FHIR Observation", required = true, dataType = "string", paramType = "body", defaultValue="")
+            @ApiImplicitParam(name = "observation", value = "FHIR Observation", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success"),
@@ -73,17 +68,17 @@ public class ObservationController extends RootController {
         try {
 
             Bundle bundle = eventDatetimeService.getObservationsForPatient("67");
-            if (bundle.getEntry().size() > 0) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
+
+            if (bundle.getEntries().size() > 0) {
+                response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeBundleToString(bundle), HttpStatus.OK);
             } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No observations found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
+                response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No observations found!",
+                        IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
             }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (Exception e) {
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome(e.getMessage(),
-                    IssueTypeList.EXCEPTION)), HttpStatus.INTERNAL_SERVER_ERROR);
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome(e.getMessage(),
+                    IssueTypeEnum.EXCEPTION)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return response;

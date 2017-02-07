@@ -1,7 +1,6 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Code;
-import com.csra.utility.fhir.FhirUtility;
+import ca.uhn.fhir.model.primitive.CodeDt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,13 +13,13 @@ public class CodeMapper {
 
     static Logger log = LoggerFactory.getLogger(CodeMapper.class.getName());
 
-    public String asString (Code code) {
+    public String asString(CodeDt code) {
         return new String(code.getValue());
     }
 
-    public Code asCode (String value) {
+    public CodeDt asCode(String value) {
         try {
-            return FhirUtility.createCode(value);
+            return new CodeDt(value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

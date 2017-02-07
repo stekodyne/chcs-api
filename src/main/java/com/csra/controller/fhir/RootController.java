@@ -1,5 +1,6 @@
 package com.csra.controller.fhir;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.csra.service.EventDatetimeService;
 import com.csra.service.PatientService;
 import com.csra.service.PrescriptionService;
@@ -17,6 +18,9 @@ public abstract class RootController {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected FhirContext fhirContext;
 
     @Autowired
     protected PrescriptionService prescriptionService;

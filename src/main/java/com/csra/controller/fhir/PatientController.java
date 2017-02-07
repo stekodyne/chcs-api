@@ -1,11 +1,9 @@
 package com.csra.controller.fhir;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.IssueTypeList;
-import com.csra.fhir.Patient;
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import com.csra.utility.fhir.FhirUtility;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -40,18 +38,13 @@ public class PatientController extends RootController {
     public ResponseEntity<String> findAll() {
         ResponseEntity<String> response = null;
 
-        try {
+        Bundle bundle = patientService.getPatients();
 
-            Bundle bundle = patientService.getPatients();
-
-            if (bundle.getEntry().size() > 0) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(bundle), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patients found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (bundle.getEntries().size() > 0) {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeBundleToString(bundle), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No patients found!",
+                    IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
         }
 
         return response;
@@ -69,17 +62,13 @@ public class PatientController extends RootController {
     public ResponseEntity<String> findByIen(@PathVariable String ien) {
         ResponseEntity<String> response = null;
 
-        try {
-            Patient p = patientService.getFhirPatientFromPatient(ien);
+        Patient p = patientService.getFhirPatientFromPatient(ien);
 
-            if (p != null) {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(p), HttpStatus.OK);
-            } else {
-                response = new ResponseEntity<String>(objectMapper.writeValueAsString(FhirUtility.createOperationOutcome("No patient found!",
-                        IssueTypeList.NOT_FOUND)), HttpStatus.NOT_FOUND);
-            }
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (p != null) {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(p), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(FhirUtility.createOperationOutcome("No patient found!",
+                    IssueTypeEnum.NOT_FOUND)), HttpStatus.NOT_FOUND);
         }
 
         return response;

@@ -1,10 +1,7 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Bundle;
-import com.csra.fhir.BundleEntry;
-import com.csra.fhir.BundleType;
-import com.csra.fhir.BundleTypeList;
-import com.csra.fhir.ResourceContainer;
+import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum;
 import com.csra.model.Patient;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -21,10 +18,16 @@ import java.util.List;
 /**
  * Created by steffen on 12/27/16.
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {HumanNameMapper.class, MaritalStatusMapper.class, IdMapper.class, CodeMapper.class, StringMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+        HumanNameMapper.class,
+        MaritalStatusMapper.class,
+        IdMapper.class,
+        CodeMapper.class,
+        StringMapper.class,
+        GenderMapper.class})
 public interface PatientMapper {
 
-    PatientMapper INSTANCE = Mappers.getMapper( PatientMapper.class );
+    PatientMapper INSTANCE = Mappers.getMapper(PatientMapper.class);
 
     static Logger log = LoggerFactory.getLogger(PatientMapper.class.getName());
 
@@ -33,36 +36,31 @@ public interface PatientMapper {
             @Mapping(source = "sex", target = "gender"),
             @Mapping(source = "maritalStatus", target = "maritalStatus")
     })
-    com.csra.fhir.Patient patientToFhirPatient(com.csra.model.Patient patient);
+    ca.uhn.fhir.model.dstu2.resource.Patient patientToFhirPatient(com.csra.model.Patient patient);
 
     @InheritInverseConfiguration
-    com.csra.model.Patient patientFromFhirPatient(com.csra.fhir.Patient patient);
+    com.csra.model.Patient patientFromFhirPatient(ca.uhn.fhir.model.dstu2.resource.Patient patient);
 
-    default com.csra.fhir.Bundle patientsToFhirBundle(List<com.csra.model.Patient> patients) {
+    default Bundle patientsToFhirBundle(List<com.csra.model.Patient> patients) {
         Bundle bundle = new Bundle();
-        BundleType bundleType = new BundleType();
-        bundleType.setValue(BundleTypeList.COLLECTION);
-        bundle.setType(bundleType);
+        bundle.setType(BundleTypeEnum.COLLECTION);
 
-        for(com.csra.model.Patient resource : patients) {
-            BundleEntry bundleEntry = new BundleEntry();
-            ResourceContainer resourceContainer = new ResourceContainer();
-            resourceContainer.setPatient(this.patientToFhirPatient(resource));
-            bundleEntry.setResource(resourceContainer);
+        for (com.csra.model.Patient resource : patients) {
+            Bundle.Entry bundleEntry = new Bundle.Entry();
+            bundleEntry.setResource(patientToFhirPatient(resource));
             bundle.getEntry().add(bundleEntry);
         }
 
         return bundle;
     }
 
-    default List<com.csra.model.Patient> patientsFromFhirBundle(com.csra.fhir.Bundle bundle){
+    default List<com.csra.model.Patient> patientsFromFhirBundle(Bundle bundle) {
         ArrayList<com.csra.model.Patient> patients = new ArrayList<Patient>();
 
-        if(bundle != null) {
-            for (BundleEntry entry : bundle.getEntry()) {
-                ResourceContainer resourceContainer = entry.getResource();
-                if (resourceContainer != null) {
-                    patients.add(this.patientFromFhirPatient(resourceContainer.getPatient()));
+        if (bundle != null) {
+            for (Bundle.Entry entry : bundle.getEntry()) {
+                if (entry != null) {
+                    patients.add(this.patientFromFhirPatient((ca.uhn.fhir.model.dstu2.resource.Patient) entry.getResource()));
                 }
             }
         }

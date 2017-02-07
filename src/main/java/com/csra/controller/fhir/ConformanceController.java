@@ -1,11 +1,10 @@
 package com.csra.controller.fhir;
 
-import com.csra.fhir.Conformance;
+import ca.uhn.fhir.model.dstu2.resource.Conformance;
+import ca.uhn.fhir.model.dstu2.valueset.ConformanceResourceStatusEnum;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 import com.csra.utility.fhir.ChcsApiUtility;
-import com.csra.utility.fhir.ObjectFactory;
 import com.csra.utility.fhir.FhirUtility;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -26,34 +25,28 @@ import java.util.Date;
 public class ConformanceController extends RootController {
 
     @ApiOperation(value = "getMetadata", nickname = "getMetadata")
-    @RequestMapping(method = RequestMethod.GET, path="/Conformance/metadata", produces = "application/json+fhir")
+    @RequestMapping(method = RequestMethod.GET, path = "/Conformance/metadata", produces = "application/json+fhir")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Object.class),
+            @ApiResponse(code = 200, message = "Success", response = Conformance.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> getMetadata(HttpServletRequest request) {
         ResponseEntity<String> response = null;
 
-        try {
-            Conformance conformance = (Conformance) ObjectFactory.getObject("conformance");
-            conformance.setId(FhirUtility.createId());
-            conformance.setUrl(FhirUtility.createUri(request.getRequestURI()));
-            conformance.setStatus(FhirUtility.ConformanceStatus.DRAFT.code);
-            conformance.setExperimental(FhirUtility.Boolean.TRUE.bool);
-            conformance.setFhirVersion(FhirUtility.FHIR_VERSION);
-            conformance.setDate(FhirUtility.convertDateTime(new Date()));
-            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_MEDICATIONORDER.reference);
-            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_PATIENT.reference);
-            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_DEVICEMETRIC.reference);
-            conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_OBSERVATION.reference);
-            conformance.getFormat().add(FhirUtility.Format.JSON.code);
+        Conformance conformance = new Conformance();
+        conformance.setId(FhirUtility.createId().getId());
+        conformance.setUrl(FhirUtility.createUri(request.getRequestURI()).getValue());
+        conformance.setStatus(ConformanceResourceStatusEnum.DRAFT);
+        conformance.setExperimental(true);
+        conformance.setFhirVersion(FhirUtility.FHIR_VERSION);
+        conformance.setDate(new DateTimeDt(new Date()));
+        conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_MEDICATIONORDER.reference);
+        conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_PATIENT.reference);
+        conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_DEVICEMETRIC.reference);
+        conformance.getProfile().add(ChcsApiUtility.Profile.CHCSAPI_OBSERVATION.reference);
+        conformance.getFormat().add(FhirUtility.Format.JSON.code);
 
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-            response = new ResponseEntity<String>(objectMapper.writeValueAsString(conformance), HttpStatus.OK);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        } catch (JsonProcessingException e) {
-            response = new ResponseEntity<String>("{\"error\": \"Failed to pasre object!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(conformance), HttpStatus.OK);
 
         return response;
     }

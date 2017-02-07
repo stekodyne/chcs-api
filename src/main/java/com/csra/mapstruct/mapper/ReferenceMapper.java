@@ -1,10 +1,7 @@
 package com.csra.mapstruct.mapper;
 
-import com.csra.fhir.Reference;
-import com.csra.utility.fhir.FhirUtility;
-import com.csra.utility.fhir.ObjectFactory;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import org.springframework.stereotype.Component;
-import java.util.UUID;
 
 /**
  * Created by steffen on 12/27/16.
@@ -12,15 +9,14 @@ import java.util.UUID;
 @Component
 public class ReferenceMapper {
 
-    public String asString (Reference reference) {
-        return new String(reference.getDisplay().getValue());
+    public String asString(ResourceReferenceDt reference) {
+        return new String(reference.getDisplay().toString());
     }
 
-    public Reference asReference (String item) {
+    public ResourceReferenceDt asReference(String item) {
         try {
-            Reference reference = (Reference) ObjectFactory.getObject("reference");
-            reference.setId(FhirUtility.createUuid().getValue());
-            reference.setDisplay(FhirUtility.createString(item));
+            ResourceReferenceDt reference = new ResourceReferenceDt();
+            reference.setDisplay(item);
             return reference;
         } catch (Exception e) {
             throw new RuntimeException(e);

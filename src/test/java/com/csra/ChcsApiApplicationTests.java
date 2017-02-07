@@ -63,22 +63,6 @@ public class ChcsApiApplicationTests {
 	}
 
 	@Test
-	public void createSpringfoxSwaggerJsonForStub() throws Exception {
-		String outputDir = System.getProperty("io.springfox.staticdocs.outputDir").concat("/stub");
-		MvcResult mvcResult = this.mockMvc.perform(get("/v2/api-docs?group=stub")
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-
-		MockHttpServletResponse response = mvcResult.getResponse();
-		String swaggerJson = response.getContentAsString();
-		Files.createDirectories(Paths.get(outputDir));
-		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputDir, "swagger.json"), StandardCharsets.UTF_8)){
-			writer.write(swaggerJson);
-		}
-	}
-
-	@Test
 	public void createSpringfoxSwaggerJsonForObservation() throws Exception {
 		String outputDir = System.getProperty("io.springfox.staticdocs.outputDir").concat("/observation");
 		MvcResult mvcResult = this.mockMvc.perform(get("/v2/api-docs?group=Observation")
